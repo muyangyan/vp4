@@ -1,0 +1,32 @@
+// Property specifications for the grid world MDP
+
+// P1: What is the maximum probability of reaching the goal?
+Pmax=? [ F goal ]
+
+// P2: What is the minimum probability of reaching the goal?
+Pmin=? [ F goal ]
+
+// P3: What is the maximum probability of reaching the goal while staying safe?
+Pmax=? [ safe U goal ]
+
+// P4: What is the minimum probability of hitting a hazard?
+Pmin=? [ F hazard ]
+
+// P5: What is the expected number of steps to reach the goal (under optimal policy)?
+R{"steps"}min=? [ F goal ]
+
+// P6: What is the maximum expected total reward considering goal rewards and hazard penalties?
+R{"goal_reward"}max=? [ F (goal | hazard) ]
+
+// P7: Under the optimal policy, what is the probability of reaching the goal within 20 steps?
+Pmax=? [ F<=20 goal ]
+
+// P8: Is it possible to reach the goal with probability at least 0.9?
+Pmax>=0.9 [ F goal ]
+
+// P9: What is the expected number of hazard penalties incurred?
+R{"hazard_penalty"}min=? [ F (goal | hazard) ]
+
+// P10: Maximum probability of eventually reaching goal or hazard
+Pmax=? [ F (goal | hazard) ]
+

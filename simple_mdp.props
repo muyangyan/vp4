@@ -1,0 +1,14 @@
+// Properties for simple MDP
+
+// P1: Maximum probability of reaching goal (should be 1.0 - deterministic)
+Pmax=? [ F goal ]
+
+// P2: Minimum steps to reach goal
+R{"steps"}min=? [ F goal ]
+
+// P3: Maximum probability of reaching goal in exactly 4 steps
+Pmax=? [ F=4 goal ]
+
+// P4: Can we reach goal with probability 1?
+Pmax>=1.0 [ F goal ]
+

@@ -1,0 +1,109 @@
+// Grid World MDP for PRISM
+// A 4x4 grid where an agent navigates from start to goal, avoiding hazards
+// States: (x,y) coordinates where x,y in [0,3]
+// Actions: north, south, east, west
+// Stochastic: 80% intended direction, 10% left, 10% right
+
+mdp
+
+// Grid dimensions
+const int GRID_SIZE = 4;
+const int MAX_COORD = GRID_SIZE - 1;
+
+// Hazard locations
+const int HAZARD1_X = 1;
+const int HAZARD1_Y = 1;
+const int HAZARD2_X = 2;
+const int HAZARD2_Y = 2;
+
+// Goal location
+const int GOAL_X = 3;
+const int GOAL_Y = 3;
+
+// Start location
+const int START_X = 0;
+const int START_Y = 0;
+
+module agent
+    x : [0..MAX_COORD] init START_X;
+    y : [0..MAX_COORD] init START_Y;
+    at_goal : bool init false;
+    at_hazard : bool init false;
+    
+    // Check if at goal
+    [] (x = GOAL_X) & (y = GOAL_Y) & !at_goal -> (at_goal' = true);
+    
+    // Check if at hazard
+    [] ((x = HAZARD1_X & y = HAZARD1_Y) | (x = HAZARD2_X & y = HAZARD2_Y)) & !at_hazard -> 
+        (at_hazard' = true);
+    
+    // Terminal states
+    [done] at_goal -> true;
+    [done] at_hazard -> true;
+    
+    // Action: move north (attempt to increase y)
+    [north] !at_goal & !at_hazard & y < MAX_COORD ->
+        0.8 : (y' = y + 1) +  // intended direction
+        0.1 : (x' = max(0, x - 1)) +  // slip left (west)
+        0.1 : (x' = min(MAX_COORD, x + 1));  // slip right (east)
+    
+    [north] !at_goal & !at_hazard & y = MAX_COORD ->
+        0.8 : true +  // stay in place (hit wall)
+        0.1 : (x' = max(0, x - 1)) +
+        0.1 : (x' = min(MAX_COORD, x + 1));
+    
+    // Action: move south (attempt to decrease y)
+    [south] !at_goal & !at_hazard & y > 0 ->
+        0.8 : (y' = y - 1) +
+        0.1 : (x' = max(0, x - 1)) +
+        0.1 : (x' = min(MAX_COORD, x + 1));
+    
+    [south] !at_goal & !at_hazard & y = 0 ->
+        0.8 : true +
+        0.1 : (x' = max(0, x - 1)) +
+        0.1 : (x' = min(MAX_COORD, x + 1));
+    
+    // Action: move east (attempt to increase x)
+    [east] !at_goal & !at_hazard & x < MAX_COORD ->
+        0.8 : (x' = x + 1) +
+        0.1 : (y' = max(0, y - 1)) +  // slip down (south)
+        0.1 : (y' = min(MAX_COORD, y + 1));  // slip up (north)
+    
+    [east] !at_goal & !at_hazard & x = MAX_COORD ->
+        0.8 : true +
+        0.1 : (y' = max(0, y - 1)) +
+        0.1 : (y' = min(MAX_COORD, y + 1));
+    
+    // Action: move west (attempt to decrease x)
+    [west] !at_goal & !at_hazard & x > 0 ->
+        0.8 : (x' = x - 1) +
+        0.1 : (y' = max(0, y - 1)) +
+        0.1 : (y' = min(MAX_COORD, y + 1));
+    
+    [west] !at_goal & !at_hazard & x = 0 ->
+        0.8 : true +
+        0.1 : (y' = max(0, y - 1)) +
+        0.1 : (y' = min(MAX_COORD, y + 1));
+endmodule
+
+// Rewards structure
+rewards "steps"
+    [north] true : 1;
+    [south] true : 1;
+    [east] true : 1;
+    [west] true : 1;
+endrewards
+
+rewards "goal_reward"
+    [] at_goal : 100;
+endrewards
+
+rewards "hazard_penalty"
+    [] at_hazard : -50;
+endrewards
+
+// Labels for property specifications
+label "goal" = at_goal;
+label "hazard" = at_hazard;
+label "safe" = !at_hazard;
+

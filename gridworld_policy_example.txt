@@ -1,0 +1,39 @@
+// Example optimal policy exported from PRISM
+// Format: state_id:(x,y,at_goal,at_hazard)=action
+// This policy maximizes P[F goal] - probability of eventually reaching the goal
+
+// Starting from (0,0) - move east
+0:(0,0,false,false)=east
+
+// Bottom row - continue moving east
+1:(1,0,false,false)=east
+2:(2,0,false,false)=east
+
+// Right column bottom - move north
+3:(3,0,false,false)=north
+
+// Second row
+4:(0,1,false,false)=north
+5:(1,1,false,true)=done  // Hazard state
+6:(2,1,false,false)=north
+7:(3,1,false,false)=north
+
+// Third row
+8:(0,2,false,false)=north
+9:(1,2,false,false)=north
+10:(2,2,false,true)=done  // Hazard state
+11:(3,2,false,false)=north
+
+// Top row
+12:(0,3,false,false)=east
+13:(1,3,false,false)=east
+14:(2,3,false,false)=east
+15:(3,3,true,false)=done  // Goal state
+
+// Policy Statistics:
+// - Total states: 16 (4x4 grid)
+// - Reachable states: 16
+// - Terminal states: 3 (1 goal, 2 hazards)
+// - Average steps to goal: 8.235
+// - Goal-reaching probability: 0.9824
+

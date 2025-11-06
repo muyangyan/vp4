@@ -1,0 +1,65 @@
+// Stochastic Grid World MDP
+// 3x3 grid with stochastic movements
+// Intended direction succeeds 90% of time, 10% random move
+
+mdp
+
+const int N = 2; // Grid is 3x3 (0,1,2)
+const int HAZARD_X = 1;
+const int HAZARD_Y = 1;
+
+module robot
+    x : [0..N] init 0;
+    y : [0..N] init 0;
+    crashed : bool init false;
+    
+    // Goal state - top right (2,2)
+    [done] (x=N & y=N) -> true;
+    
+    // Hazard state - center (1,1)
+    [crash] (x=HAZARD_X & y=HAZARD_Y & !crashed) -> (crashed'=true);
+    [done] crashed -> true;
+    
+    // Move right with uncertainty
+    [right] (!crashed & !(x=N & y=N) & !(x=HAZARD_X & y=HAZARD_Y)) ->
+        0.9 : (x'=min(N, x+1)) +      // intended: move right
+        0.05 : (y'=min(N, y+1)) +     // slip: move up instead  
+        0.05 : (y'=max(0, y-1));      // slip: move down instead
+    
+    // Move up with uncertainty  
+    [up] (!crashed & !(x=N & y=N) & !(x=HAZARD_X & y=HAZARD_Y)) ->
+        0.9 : (y'=min(N, y+1)) +      // intended: move up
+        0.05 : (x'=min(N, x+1)) +     // slip: move right instead
+        0.05 : (x'=max(0, x-1));      // slip: move left instead
+    
+    // Move left with uncertainty
+    [left] (!crashed & !(x=N & y=N) & !(x=HAZARD_X & y=HAZARD_Y)) ->
+        0.9 : (x'=max(0, x-1)) +      // intended: move left
+        0.05 : (y'=min(N, y+1)) +     // slip: move up instead
+        0.05 : (y'=max(0, y-1));      // slip: move down instead
+    
+    // Move down with uncertainty
+    [down] (!crashed & !(x=N & y=N) & !(x=HAZARD_X & y=HAZARD_Y)) ->
+        0.9 : (y'=max(0, y-1)) +      // intended: move down
+        0.05 : (x'=min(N, x+1)) +     // slip: move right instead
+        0.05 : (x'=max(0, x-1));      // slip: move left instead
+    
+endmodule
+
+// Rewards
+rewards "steps"
+    [right] true : 1;
+    [up] true : 1;
+    [left] true : 1;
+    [down] true : 1;
+endrewards
+
+rewards "total"
+    [done] x=N & y=N : 100;  // +100 for reaching goal
+    [done] crashed : -50;     // -50 for hitting hazard
+endrewards
+
+label "goal" = (x=N & y=N);
+label "hazard" = crashed;
+label "safe" = !crashed;
+
