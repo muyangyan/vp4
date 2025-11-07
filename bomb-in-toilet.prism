@@ -1,0 +1,40 @@
+// Bomb-in-Toilet Domain encoded as MDP
+// Based on PDDL domain: bomb-and-toilet
+// Action: dunk-package with probabilistic toilet clogging effect
+
+mdp
+
+module bomb_toilet
+    // State variables (predicates from PDDL)
+    bomb_in_package : bool init true;
+    toilet_clogged : bool init false;
+    bomb_defused : bool init false;
+    
+    // Action: dunk-package
+    // Effect 1: If bomb-in-package, then bomb-defused becomes true (deterministic)
+    // Effect 2: With 5% probability, toilet-clogged becomes true (probabilistic)
+    [dunk_package] !bomb_defused ->
+        0.95 : (bomb_defused'=bomb_in_package) & (bomb_in_package'=false) +
+        0.05 : (bomb_defused'=bomb_in_package) & (bomb_in_package'=false) & (toilet_clogged'=true);
+    
+    // Terminal state - bomb is defused
+    [done] bomb_defused -> true;
+    
+endmodule
+
+// Rewards
+rewards "actions"
+    [dunk_package] true : 1;
+endrewards
+
+rewards "success"
+    [done] bomb_defused & !toilet_clogged : 100;
+    [done] bomb_defused & toilet_clogged : 50;
+endrewards
+
+// Labels for properties
+label "bomb_defused" = bomb_defused;
+label "toilet_clogged" = toilet_clogged;
+label "success" = bomb_defused & !toilet_clogged;
+label "success_with_clog" = bomb_defused & toilet_clogged;
+

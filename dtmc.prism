@@ -1,0 +1,26 @@
+dtmc  // Note: dtmc not mdp
+
+module bomb_toilet
+    bomb_in_pkg1 : bool init false;
+    bomb_in_pkg2 : bool init false;
+    toilet_clogged : bool init false;
+    initialized : bool init false;
+    dunked : bool init false;
+    
+    // Initial choice
+    [] !initialized ->
+        0.5 : (bomb_in_pkg1'=true) & (initialized'=true) +
+        0.5 : (bomb_in_pkg2'=true) & (initialized'=true);
+    
+    // Policy automatically dunks wrong package
+    [] initialized & !dunked & bomb_in_pkg2 ->
+        0.95 : (dunked'=true) +
+        0.05 : (dunked'=true) & (toilet_clogged'=true);
+    
+    [] initialized & !dunked & bomb_in_pkg1 ->
+        0.95 : (dunked'=true) +
+        0.05 : (dunked'=true) & (toilet_clogged'=true);
+    
+endmodule
+
+label "bomb_defused" = false;  // Never defused under this policy
