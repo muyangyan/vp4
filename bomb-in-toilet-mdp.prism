@@ -9,17 +9,16 @@ module bomb_toilet
     bomb_in_package : bool init true;
     toilet_clogged : bool init false;
     bomb_defused : bool init false;
-    
+
     // Action: dunk-package
-    // Effect 1: If bomb-in-package, then bomb-defused becomes true (deterministic)
-    // Effect 2: With 5% probability, toilet-clogged becomes true (probabilistic)
+    // Bomb always becomes defused, but we have a 5% chance to also clog the toilet
     [dunk_package] !bomb_defused ->
         0.95 : (bomb_defused'=bomb_in_package) & (bomb_in_package'=false) +
         0.05 : (bomb_defused'=bomb_in_package) & (bomb_in_package'=false) & (toilet_clogged'=true);
-    
+
     // Terminal state - bomb is defused
     [done] bomb_defused -> true;
-    
+
 endmodule
 
 // Rewards
