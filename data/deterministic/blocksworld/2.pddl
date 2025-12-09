@@ -5,7 +5,7 @@
   (:domain blocks)
   (:objects a b c - block)
   (:init 
-    (on-table a) (on-table b) (on-table c)
+    (ontable a) (ontable b) (ontable c)
     (clear a) (clear b) (clear c)
     (handempty)
   )

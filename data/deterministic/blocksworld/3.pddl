@@ -5,10 +5,10 @@
   (:domain blocks)
   (:objects a b c d - block)
   (:init 
-    (on-table a) (on b a) (on c b) (on d c)
+    (ontable a) (on b a) (on c b) (on d c)
     (clear d)
     (handempty)
   )
-  (:goal (and (on-table a) (on-table b) (on-table c) (on-table d)
+  (:goal (and (ontable a) (ontable b) (ontable c) (ontable d)
               (clear a) (clear b) (clear c) (clear d)))
 )
