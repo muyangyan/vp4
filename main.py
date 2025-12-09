@@ -1,7 +1,11 @@
 from fire import Fire
 import json
+import plado
 
 def pddl_to_mdp(domain_file: str, problem_file: str) -> str:
+    domain, problem = plado.parse(domain_file, problem_file)
+
+
     return ""
 
 
@@ -30,7 +34,7 @@ def run_single(
 
     # parse pddl domain, problem -> mdp file =========================
     mdp_text = pddl_to_mdp(domain_file, problem_file)
-    # write mdp file to disk
+
     with open("tmp/mdp.prism", "w") as f:
         f.write(mdp_text)
 
