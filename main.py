@@ -1,11 +1,13 @@
 from fire import Fire
-
+import json
 
 def pddl_to_mdp(domain_file: str, problem_file: str) -> str:
     return ""
 
 
-def mdp_to_dtmc(mdp_file: str, policy: str) -> str:
+def mdp_to_dtmc(mdp_text: str, policy: dict) -> str:
+
+    # parse policy
     return ""
 
 def verify_property(dtmc_file: str, property: str) -> str:
@@ -22,25 +24,28 @@ def verify_property(dtmc_file: str, property: str) -> str:
 def run_single(
     domain_file: str,
     problem_file: str,
-    policy: str, 
-    property: str
+    policy_file: str, 
+    property_file: str
 ):
 
-
-    # parse pddl domain, problem -> mdp file
+    # parse pddl domain, problem -> mdp file =========================
     mdp_text = pddl_to_mdp(domain_file, problem_file)
     # write mdp file to disk
     with open("tmp/mdp.prism", "w") as f:
         f.write(mdp_text)
 
 
-    # apply policy to get actions -> dtmc file
+    # apply policy to get actions -> dtmc file =======================
+    with open(policy_file, "r") as f:
+        policy = json.load(f)
+
     dtmc_text = mdp_to_dtmc(mdp_text, policy)
-    # write dtmc file to disk
+
     with open("tmp/dtmc.prism", "w") as f:
         f.write(dtmc_text)
 
-    # call prism on dtmc file, with property
+    # call prism on dtmc file, with property =========================
+    property = open(property_file, "r").read()
     result = verify_property("tmp/dtmc.prism", property)
 
     # print result
