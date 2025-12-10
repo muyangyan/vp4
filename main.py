@@ -14,10 +14,10 @@ def mdp_to_dtmc(mdp_text: str, policy: dict) -> str:
     # parse policy
     return ""
 
-def verify_property(dtmc_file: str, property: str) -> str:
+def verify_property(dtmc_file: str, property_file: str) -> str:
     """
     dtmc_file: Path to the DTMC model file in PRISM format.
-    property: path to file containing property in 
+    property_file: path to file containing property in 
     """
     # call prism on dtmc file, with property
 
@@ -49,8 +49,7 @@ def run_single(
         f.write(dtmc_text)
 
     # call prism on dtmc file, with property =========================
-    property = open(property_file, "r").read()
-    result = verify_property("tmp/dtmc.prism", property)
+    result = verify_property("tmp/dtmc.prism", property_file)
 
     # print result
     print(result)
