@@ -32,8 +32,8 @@ rewards "success"
 endrewards
 
 // Labels for properties
-label "bomb_defused" = bomb_defused;
-label "toilet_clogged" = toilet_clogged;
+//label "bomb_defused" = bomb_defused;
+//label "toilet_clogged" = toilet_clogged;
 label "success" = bomb_defused & !toilet_clogged;
 label "success_with_clog" = bomb_defused & toilet_clogged;
-
+label "goal" = bomb_defused & !toilet_clogged;

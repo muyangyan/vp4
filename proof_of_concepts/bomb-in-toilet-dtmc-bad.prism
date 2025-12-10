@@ -1,6 +1,7 @@
 // Bomb-in-Toilet Domain encoded as DTMC
 // Based on PDDL domain: bomb-and-toilet
 // Action: dunk-package with probabilistic toilet clogging effect
+// Policy: dump *wrong* package
 
 dtmc
 
