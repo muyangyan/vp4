@@ -45,10 +45,10 @@ def verify_property(dtmc_file: str, property_file: str) -> str:
 
 
 def run_single(
-    domain_file: str,
-    problem_file: str,
-    policy_file: str, 
-    property_file: str
+    domain_file: str = "data/deterministic/blocksworld/domain.pddl",
+    problem_file: str = "data/deterministic/blocksworld/1.pddl",
+    policy_file: str = "data/deterministic/blocksworld/policy.json", 
+    property_file: str = "data/deterministic/blocksworld/property.pctl",
 ):
 
     translator = PDDLToPRISM(domain_file, problem_file)

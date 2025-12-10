@@ -242,19 +242,11 @@ class PDDLToPRISM:
             lines.append(f"\t{atom} : bool init {val};")
         return lines
 
-
     def generate_mdp(self) -> str:
         lines = ["mdp", "", "module main"]
         
         lines.extend(self._write_initial_state(lines))
-        # init_facts = set()
-        # for atom in self.problem.initial:
-        #     args = [arg.name for arg in atom.arguments]
-        #     init_facts.add(self._predicate_to_prism(atom.name, args))
 
-        # for atom in self.ground_atoms:
-        #     val = "true" if atom in init_facts else "false"
-        #     lines.append(f"\t{atom} : bool init {val};")
         lines.append("")
 
         for action in self.ground_actions:
@@ -276,6 +268,8 @@ class PDDLToPRISM:
         for rule in policy:
             # ground 
             lifted_action = rule['then']
+            for 
+
 
             lines.append(f"\t[{rule['name']}] {rule['if']} -> {rule['updates']};")
 
