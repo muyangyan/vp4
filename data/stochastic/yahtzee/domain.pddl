@@ -14,37 +14,32 @@
 
   ;; Initial full roll of all dice
   (:action roll-initial
-     :precondition (not rolled)
+     :precondition (not (rolled))
      :effect (and
          (rolled)
          (probabilistic
             1.0
             (and
-               ;; d1
-               (when true
-                 (probabilistic
-                   1/6 (d1=1) 1/6 (d1=2) 1/6 (d1=3)
-                   1/6 (d1=4) 1/6 (d1=5) 1/6 (d1=6)))
-               ;; d2
-               (when true
-                 (probabilistic
-                   1/6 (d2=1) 1/6 (d2=2) 1/6 (d2=3)
-                   1/6 (d2=4) 1/6 (d2=5) 1/6 (d2=6)))
+              ;; d1
+              (probabilistic
+                1/6 (d1=1) 1/6 (d1=2) 1/6 (d1=3)
+                1/6 (d1=4) 1/6 (d1=5) 1/6 (d1=6))
+              ;; d2
+              (probabilistic
+                1/6 (d2=1) 1/6 (d2=2) 1/6 (d2=3)
+                1/6 (d2=4) 1/6 (d2=5) 1/6 (d2=6))
                ;; d3
-               (when true
-                 (probabilistic
-                   1/6 (d3=1) 1/6 (d3=2) 1/6 (d3=3)
-                   1/6 (d3=4) 1/6 (d3=5) 1/6 (d3=6)))
+              (probabilistic
+                1/6 (d3=1) 1/6 (d3=2) 1/6 (d3=3)
+                1/6 (d3=4) 1/6 (d3=5) 1/6 (d3=6))
                ;; d4
-               (when true
-                 (probabilistic
-                   1/6 (d4=1) 1/6 (d4=2) 1/6 (d4=3)
-                   1/6 (d4=4) 1/6 (d4=5) 1/6 (d4=6)))
+              (probabilistic
+                1/6 (d4=1) 1/6 (d4=2) 1/6 (d4=3)
+                1/6 (d4=4) 1/6 (d4=5) 1/6 (d4=6))
                ;; d5
-               (when true
-                 (probabilistic
-                   1/6 (d5=1) 1/6 (d5=2) 1/6 (d5=3)
-                   1/6 (d5=4) 1/6 (d5=5) 1/6 (d5=6)))
+              (probabilistic
+                1/6 (d5=1) 1/6 (d5=2) 1/6 (d5=3)
+                1/6 (d5=4) 1/6 (d5=5) 1/6 (d5=6))
             )
          )
      )
@@ -52,7 +47,7 @@
 
   ;; Reroll actions: one per die
   (:action reroll-d1
-     :precondition (and rolled (not rerolled1))
+     :precondition (and (rolled) (not (rerolled1)))
      :effect (and
          (rerolled1)
          ;; clear d1 first
@@ -65,12 +60,12 @@
      )
   )
   (:action decline-reroll-d1
-    :precondition (and rolled (not rerolled1))
+    :precondition (and (rolled) (not (rerolled1)))
     :effect (rerolled1)
   )
 
   (:action reroll-d2
-     :precondition (and rolled (not rerolled2))
+     :precondition (and (rolled) (not (rerolled2)))
      :effect (and
          (rerolled2)
          ;; clear d2 first
@@ -83,12 +78,12 @@
      )
   )
   (:action decline-reroll-d2
-    :precondition (and rolled (not rerolled2))
+    :precondition (and (rolled) (not (rerolled2)))
     :effect (rerolled2)
   )
   
   (:action reroll-d3
-     :precondition (and rolled (not rerolled3))
+     :precondition (and (rolled) (not (rerolled3)))
      :effect (and
          (rerolled3)
          ;; clear d3 first
@@ -101,12 +96,12 @@
      )
   )
   (:action decline-reroll-d3
-    :precondition (and rolled (not rerolled3))
+    :precondition (and (rolled) (not (rerolled3)))
     :effect (rerolled3)
   )
 
   (:action reroll-d4
-     :precondition (and rolled (not rerolled4))
+     :precondition (and (rolled) (not (rerolled4)))
      :effect (and
          (rerolled4)
          ;; clear d4 first
@@ -119,12 +114,12 @@
      )
   )
   (:action decline-reroll-d4
-    :precondition (and rolled (not rerolled4))
+    :precondition (and (rolled) (not (rerolled4)))
     :effect (rerolled4)
   )
 
   (:action reroll-d5
-     :precondition (and rolled (not rerolled5))
+     :precondition (and (rolled) (not (rerolled5)))
      :effect (and
          (rerolled5)
          ;; clear d5 first
@@ -137,7 +132,7 @@
      )
   )
   (:action decline-reroll-d5
-    :precondition (and rolled (not rerolled5))
+    :precondition (and (rolled) (not (rerolled5)))
     :effect (rerolled5)
   )
 
