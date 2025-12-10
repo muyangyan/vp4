@@ -31,6 +31,12 @@ class PDDLToPRISM:
         return self.objects.get(type_name, [])
     
     def _predicate_to_prism(self, predicate: str, args: List[str]) -> str:
+        """
+        purely formatting function to make PDDL predicate name valid in PRISM
+
+        predicate: name of PDDL predicate
+        args: list of object arguments (are these lifted or grounded?)
+        """
         clean_args = [a.replace('-', '_') for a in args]
         clean_pred = predicate.replace('-', '_')
         return f"{clean_pred}_{'_'.join(clean_args)}"

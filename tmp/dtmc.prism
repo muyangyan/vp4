@@ -1,0 +1,18 @@
+dtmc
+
+module main
+	clear_a : bool init true;
+	clear_b : bool init false;
+	handempty_ : bool init true;
+	holding_a : bool init false;
+	holding_b : bool init false;
+	on_a_a : bool init false;
+	on_a_b : bool init true;
+	on_b_a : bool init false;
+	on_b_b : bool init false;
+	ontable_a : bool init false;
+	ontable_b : bool init true;
+
+	[] ((on_a_b & clear_a)) & ((on_a_b & clear_a & handempty_)) -> 1.0 : (holding_a' = true) & (clear_b' = true) & (clear_a' = false) & (handempty_' = false) & (on_a_b' = false);
+	[] ((on_b_a & clear_b)) & ((on_b_a & clear_b & handempty_)) & !(((on_a_b & clear_a))) -> 1.0 : (holding_b' = true) & (clear_a' = true) & (clear_b' = false) & (handempty_' = false) & (on_b_a' = false);
+endmodule
