@@ -9,10 +9,28 @@ def pddl_to_mdp(domain_file: str, problem_file: str) -> str:
     return ""
 
 
-def mdp_to_dtmc(mdp_text: str, policy: dict) -> str:
 
-    # parse policy
-    return ""
+
+
+
+def mdp_to_dtmc(mdp_text: str, policy: dict,
+    name: str = "domain_problem_policy"
+) -> str:
+    text = f"dtmc\n\nmodule {name}\n"
+
+    # add the boolean variables
+
+
+    # add each rule
+    for rule in policy:
+        pass
+
+
+    text += "\nendmodule\n\n"
+
+
+    return text
+
 
 def verify_property(dtmc_file: str, property: str) -> str:
     """
@@ -22,7 +40,6 @@ def verify_property(dtmc_file: str, property: str) -> str:
     # call prism on dtmc file, with property
 
     return ""
-
 
 
 def run_single(
