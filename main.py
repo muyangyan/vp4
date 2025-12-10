@@ -2,35 +2,9 @@ from fire import Fire
 import json
 import plado
 import subprocess
-
-def pddl_to_mdp(domain_file: str, problem_file: str) -> str:
-    domain, problem = plado.parse(domain_file, problem_file)
+from src.pddl_parser import PDDLToPRISM
 
 
-    return ""
-
-
-
-
-
-
-def mdp_to_dtmc(mdp_text: str, policy: dict,
-    name: str = "domain_problem_policy"
-) -> str:
-    text = f"dtmc\n\nmodule {name}\n"
-
-    # add the boolean variables
-
-
-    # add each rule
-    for rule in policy:
-        pass
-
-
-    text += "\nendmodule\n\n"
-
-
-    return text
 
 
 def verify_property(dtmc_file: str, property_file: str) -> str:
@@ -77,8 +51,13 @@ def run_single(
     property_file: str
 ):
 
+    translator = PDDLToPRISM(domain_file, problem_file)
+
     # parse pddl domain, problem -> mdp file =========================
-    mdp_text = pddl_to_mdp(domain_file, problem_file)
+    translator.ground_state_variables()
+    translator.ground_actions_logic()
+
+    mdp_text = translator.generate_mdp()
 
     with open("tmp/mdp.prism", "w") as f:
         f.write(mdp_text)
@@ -88,7 +67,7 @@ def run_single(
     with open(policy_file, "r") as f:
         policy = json.load(f)
 
-    dtmc_text = mdp_to_dtmc(mdp_text, policy)
+    dtmc_text = translator.generate_dtmc(policy)
 
     with open("tmp/dtmc.prism", "w") as f:
         f.write(dtmc_text)

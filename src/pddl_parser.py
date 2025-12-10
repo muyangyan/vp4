@@ -230,9 +230,8 @@ class PDDLToPRISM:
                         "updates": updates_list
                     })
 
-    def generate_prism(self) -> str:
-        lines = ["mdp", "", "module main"]
-        
+    def _write_initial_state(self, lines: List[str]) -> None:
+        lines = []
         init_facts = set()
         for atom in self.problem.initial:
             args = [arg.name for arg in atom.arguments]
@@ -241,6 +240,21 @@ class PDDLToPRISM:
         for atom in self.ground_atoms:
             val = "true" if atom in init_facts else "false"
             lines.append(f"\t{atom} : bool init {val};")
+        return lines
+
+
+    def generate_mdp(self) -> str:
+        lines = ["mdp", "", "module main"]
+        
+        lines.extend(self._write_initial_state(lines))
+        # init_facts = set()
+        # for atom in self.problem.initial:
+        #     args = [arg.name for arg in atom.arguments]
+        #     init_facts.add(self._predicate_to_prism(atom.name, args))
+
+        # for atom in self.ground_atoms:
+        #     val = "true" if atom in init_facts else "false"
+        #     lines.append(f"\t{atom} : bool init {val};")
         lines.append("")
 
         for action in self.ground_actions:
@@ -252,12 +266,27 @@ class PDDLToPRISM:
 
         lines.append("endmodule")
         return "\n".join(lines)
+    
+    def generate_dtmc(self, policy: dict) -> str:
+        lines = ["dtmc", "", "module main"]
+
+        lines.extend(self._write_initial_state(lines))
+
+        # write rules from policy
+        for rule in policy:
+            # ground 
+            lifted_action = rule['then']
+
+            lines.append(f"\t[{rule['name']}] {rule['if']} -> {rule['updates']};")
+
+        lines.append("endmodule")
+        return "\n".join(lines)
 
 def pddl_to_mdp(domain_file: str, problem_file: str) -> str:
     translator = PDDLToPRISM(domain_file, problem_file)
     translator.ground_state_variables()
     translator.ground_actions_logic()
-    return translator.generate_prism()
+    return translator.generate_mdp()
 
 if __name__ == "__main__":
     mdp_str = pddl_to_mdp("data/deterministic/blocksworld/domain.pddl", "data/deterministic/blocksworld/1.pddl")
