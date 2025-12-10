@@ -1,0 +1,44 @@
+// Bomb-in-Toilet Domain encoded as DTMC
+// Based on PDDL domain: bomb-and-toilet
+// Action: dunk-package with probabilistic toilet clogging effect
+// Policy: dump *correct* package
+
+dtmc
+
+module bomb_toilet
+    // booleans are fine; explicitly init one of the bomb_in variables via the init transition
+    bomb_in_pkg1    : bool init false;
+    bomb_in_pkg2    : bool init false;
+    toilet_clogged  : bool init false;
+    initialized     : bool init false;
+    dunked_pkg1     : bool init false;
+    dunked_pkg2     : bool init false;
+
+    // Initial probabilistic choice: which package contains the bomb
+    [] !initialized ->
+        0.5 : (bomb_in_pkg1' = true) & (initialized' = true) +
+        0.5 : (bomb_in_pkg2' = true) & (initialized' = true);
+
+    // Policy: dunk the package that contains the bomb.
+    // If bomb in pkg1 and not in pkg2, dunk pkg1
+    [] initialized & !dunked_pkg1 & !dunked_pkg2 & bomb_in_pkg1 & !bomb_in_pkg2 ->
+        0.95 : (dunked_pkg1' = true) +
+        0.05 : (dunked_pkg1' = true) & (toilet_clogged' = true);
+
+    // If bomb in pkg2 and not in pkg1, dunk pkg2
+    [] initialized & !dunked_pkg1 & !dunked_pkg2 & bomb_in_pkg2 & !bomb_in_pkg1 ->
+        0.95 : (dunked_pkg2' = true) +
+        0.05 : (dunked_pkg2' = true) & (toilet_clogged' = true);
+
+    // Once a dunk has happened, stay in that state forever (absorbing self-loop).
+    // This ensures every reachable state has outgoing probability mass.
+    [] initialized & (dunked_pkg1 | dunked_pkg2) ->
+        1.0 : (initialized' = initialized);
+
+endmodule
+
+// Formula for bomb_defused: dunking the package that actually contained the bomb
+formula bomb_defused = (bomb_in_pkg1 & dunked_pkg1) | (bomb_in_pkg2 & dunked_pkg2);
+
+// Goal label: defused AND not clogged
+label "goal" = bomb_defused & !toilet_clogged;

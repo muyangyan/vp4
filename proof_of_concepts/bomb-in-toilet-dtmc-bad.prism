@@ -1,3 +1,8 @@
+// Bomb-in-Toilet Domain encoded as DTMC
+// Based on PDDL domain: bomb-and-toilet
+// Action: dunk-package with probabilistic toilet clogging effect
+// Policy: dump *wrong* package
+
 dtmc
 
 module bomb_toilet
@@ -37,4 +42,3 @@ formula bomb_defused = (bomb_in_pkg1 & dunked_pkg1) | (bomb_in_pkg2 & dunked_pkg
 
 // Goal label: defused AND not clogged
 label "goal" = bomb_defused & !toilet_clogged;
-
