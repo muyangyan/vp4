@@ -6,57 +6,57 @@
     },
     {
         "name": "Down-left recovery",
-        "if": "dir=down & at_1_2_3 & dec 2 4 & !wall 4 3 & inc 3 5 & wall 4 5",
+        "if": "dir=down & at_1_2_3 & dec_2_4 & !wall_4_3 & inc_3_5 & wall_4_5",
         "then": "move-left"
     },
     {
         "name": "Trivial left",
-        "if": "dir=left & at_1_2_3 & dec 2 4 & !wall 4 3 & (!dec 3 5 | (dec 3 5 & wall 2 5))",
+        "if": "dir=left & at_1_2_3 & dec_2_4 & !wall_4_3 & (!dec_3_5 | (dec_3_5 & wall_2_5))",
         "then": "move-left"
     },
     {
         "name": "Left-up recovery",
-        "if": "dir=left & at_1_2_3 & dec 3 4 & !wall 2 4 & inc 2 5 & wall 5 4",
+        "if": "dir=left & at_1_2_3 & dec_3_4 & !wall_2_4 & inc_2_5 & wall_5_4",
         "then": "move-up"
     },
     {
         "name": "Trivial up",
-        "if": "dir=up & at_1_2_3 & dec 3 4 & !wall 2 4 & (!inc 2 5 | (inc 2 5 & wall 5 3))",
+        "if": "dir=up & at_1_2_3 & dec_3_4 & !wall_2_4 & (!inc_2_5 | (inc_2_5 & wall_5_3))",
         "then": "move-up"
     },
     {
         "name": "Up-right recovery",
-        "if": "dir=up & at_1_2_3 & inc 2 4 & !wall 4 3 & dec 3 5 & wall 4 5",
+        "if": "dir=up & at_1_2_3 & inc_2_4 & !wall_4_3 & dec_3_5 & wall_4_5",
         "then": "move-right"
     },
     {
         "name": "Trivial right",
-        "if": "dir=right & at_1_2_3 & inc 2 4 & !wall 4 3 & (!inc 3 5 | (inc 3 5 & wall 2 5))",
+        "if": "dir=right & at_1_2_3 & inc_2_4 & !wall_4_3 & (!inc_3_5 | (inc_3_5 & wall_2_5))",
         "then": "move-right"
     },
     {
         "name": "Right-down recovery",
-        "if": "dir=right & at_1_2_3 & inc 3 4 & !wall 2 4 & dec 2 5 & wall 5 4",
+        "if": "dir=right & at_1_2_3 & inc_3_4 & !wall_2_4 & dec_2_5 & wall_5_4",
         "then": "move-down"
     },
     {
         "name": "Stuck-rotate from down",
-        "if": "dir=down & at_1_2_3 & (!inc 3 4 | (inc 3 4 & wall 2 4))",
+        "if": "dir=down & at_1_2_3 & (!inc_3_4 | (inc_3_4 & wall_2_4))",
         "then": "face-right"
     },
     {
         "name": "Stuck-rotate from right",
-        "if": "dir=right & at_1_2_3 & (!inc 2 4 | (inc 2 4 & wall 4 3))",
+        "if": "dir=right & at_1_2_3 & (!inc_2_4 | (inc_2_4 & wall_4_3))",
         "then": "face-up"
     },
     {
         "name": "Stuck-rotate from up",
-        "if": "dir=up & at_1_2_3 & (!dec 3 4 | (dec 3 4 & wall 2 4))",
+        "if": "dir=up & at_1_2_3 & (!dec_3_4 | (dec_3_4 & wall_2_4))",
         "then": "face-left"
     },
     {
         "name": "Stuck-rotate from left",
-        "if": "dir=left & at_1_2_3 & (!dec 2 4 | (dec 2 4 & wall 4 3))",
+        "if": "dir=left & at_1_2_3 & (!dec_2_4 | (dec_2_4 & wall_4_3))",
         "then": "face-down"
     },
     {

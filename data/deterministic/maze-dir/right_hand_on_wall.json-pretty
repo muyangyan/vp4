@@ -17,10 +17,10 @@
         "if": "
                 dir=down &
                 at_1_2_3 &
-                dec 2 4 &
-                !wall 4 3 &
-                inc 3 5 &
-                wall 4 5
+                dec_2_4 &
+                !wall_4_3 &
+                inc_3_5 &
+                wall_4_5
             ",
         "then": "move-left"
     },
@@ -30,9 +30,9 @@
         "if": "
                 dir=left &
                 at_1_2_3 &
-                dec 2 4 &
-                !wall 4 3 &
-                (!dec 3 5 | (dec 3 5 & wall 2 5))
+                dec_2_4 &
+                !wall_4_3 &
+                (!dec_3_5 | (dec_3_5 & wall_2_5))
             ",
         "then": "move-left"
     },
@@ -42,10 +42,10 @@
         "if": "
                 dir=left &
                 at_1_2_3 & 
-                dec 3 4 &
-                !wall 2 4 &
-                inc 2 5 &
-                wall 5 4
+                dec_3_4 &
+                !wall_2_4 &
+                inc_2_5 &
+                wall_5_4
             ",
         "then": "move-up"
     },
@@ -55,9 +55,9 @@
         "if": "
                 dir=up &
                 at_1_2_3 &
-                dec 3 4 &
-                !wall 2 4 &
-                (!inc 2 5 | (inc 2 5 & wall 5 3))
+                dec_3_4 &
+                !wall_2_4 &
+                (!inc_2_5 | (inc_2_5 & wall_5_3))
             ",
         "then": "move-up"
     },
@@ -67,10 +67,10 @@
         "if": "
                 dir=up &
                 at_1_2_3 &
-                inc 2 4 &
-                !wall 4 3 &
-                dec 3 5 &
-                wall 4 5
+                inc_2_4 &
+                !wall_4_3 &
+                dec_3_5 &
+                wall_4_5
             ",
         "then": "move-right"
     },
@@ -80,9 +80,9 @@
         "if": "
                 dir=right &
                 at_1_2_3 &
-                inc 2 4 &
-                !wall 4 3 &
-                (!inc 3 5 | (inc 3 5 & wall 2 5))
+                inc_2_4 &
+                !wall_4_3 &
+                (!inc_3_5 | (inc_3_5 & wall_2_5))
             ",
         "then": "move-right"
     },
@@ -92,10 +92,10 @@
         "if": "
                 dir=right &
                 at_1_2_3 &
-                inc 3 4 &
-                !wall 2 4 &
-                dec 2 5 &
-                wall 5 4
+                inc_3_4 &
+                !wall_2_4 &
+                dec_2_5 &
+                wall_5_4
             ",
         "then": "move-down"
     },
@@ -105,7 +105,7 @@
         "if": "
                 dir=down &
                 at_1_2_3 &
-                (!inc 3 4 | (inc 3 4 & wall 2 4))
+                (!inc_3_4 | (inc_3_4 & wall_2_4))
             ",
         "then": "face-right"
     },
@@ -115,7 +115,7 @@
         "if": "
                 dir=right &
                 at_1_2_3 &
-                (!inc 2 4 | (inc 2 4 & wall 4 3))
+                (!inc_2_4 | (inc_2_4 & wall_4_3))
             ",
         "then": "face-up"
     },
@@ -125,7 +125,7 @@
         "if": "
                 dir=up &
                 at_1_2_3 &
-                (!dec 3 4 | (dec 3 4 & wall 2 4))
+                (!dec_3_4 | (dec_3_4 & wall_2_4))
             ",
         "then": "face-left"
     },
@@ -135,7 +135,7 @@
         "if": "
                 dir=left &
                 at_1_2_3 &
-                (!dec 2 4 | (dec 2 4 & wall 4 3))
+                (!dec_2_4 | (dec_2_4 & wall_4_3))
             ",
         "then": "face-down"
     },
