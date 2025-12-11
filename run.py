@@ -2,9 +2,10 @@ from fire import Fire
 import json
 import subprocess
 from translation import pddl_to_mdp
+from typing import Optional
 import os
 
-def verify_property(dtmc_file: str, property_file: str) -> str:
+def verify_property(dtmc_file: str, property_file: str) -> Optional[str]:
     """
     dtmc_file: Path to the DTMC model file in PRISM format.
     property_file: path to file containing property in 
@@ -20,21 +21,13 @@ def verify_property(dtmc_file: str, property_file: str) -> str:
 
     # Prepare command for subprocess
     command = ["prism", dtmc_file, "-pctl", f"P=? [{property}]", f"-exportresults", f"{results_file}"]
-    command_text = " ".join(command)
-    print('COMMAND TEXT:', command_text)
     output_data = subprocess.run(command, capture_output=True, text=True)
 
     # Check return code
     if output_data.returncode != 0:
-        print(f"PRISM returned {output_data.returncode} on inputs `{command}` with error:\n{output_data.stderr}\nAborting verify_property.")
-        print('ERROR:', output_data.stderr)
-        print('OUTPUT:', output_data.stdout)
+        print(f"PRISM returned {output_data.returncode} on inputs `{command}` with info:\n--- stdout ---\n{output_data.stdout}\n--- stderr ---\n{output_data.stderr}\nAborting verify_property.")
         return None
     
-    # TODO perform post-processing:
-    # - Perform error checking (e.g. the model may be incomplete, or there may be warnings about its structure, or certain states are unreachable or unactionable)
-    # - Return results if there are no errors
-
     with open(results_file, "r") as results_infile:
         results_raw = results_infile.read().strip()
         output_amount = results_raw.split()[1].strip()
@@ -54,6 +47,7 @@ def run_single(
     policy_file = os.path.join(domain_dir, policy_file)
     property_file = os.path.join(domain_dir, property_file)
     mdp_text, translator = pddl_to_mdp(domain_file, problem_file)
+    os.makedirs("tmp/", exist_ok=True)
     with open("tmp/mdp.prism", "w") as f:
         f.write(mdp_text)
 
