@@ -3,10 +3,5 @@
     "name": "Dunk Safe Package",
     "if": "(bomb-in-package ?x) and (package ?y) and (not (= ?x ?y))",
     "then": "(dunk-package ?y)"
-  },
-  {
-    "name": "Default",
-    "if": "",
-    "then": "(dunk-package ?y)"
   }
 ]
