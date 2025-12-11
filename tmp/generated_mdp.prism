@@ -1,24 +1,21 @@
 mdp
 
 module main
-	clear_a : bool init true;
-	clear_b : bool init false;
-	handempty_ : bool init true;
-	holding_a : bool init false;
-	holding_b : bool init false;
-	on_a_a : bool init false;
-	on_a_b : bool init true;
-	on_b_a : bool init false;
-	on_b_b : bool init false;
-	ontable_a : bool init false;
-	ontable_b : bool init true;
+	bomb_defused : bool init false;
+	bomb_in_package_package1 : bool init false;
+	bomb_in_package_package2 : bool init false;
+	bomb_in_package_package3 : bool init false;
+	bomb_in_package_package4 : bool init false;
+	bomb_in_package_package5 : bool init false;
+	not_setup : bool init true;
+	toilet_clogged : bool init false;
 
-	[pick_up_a] (clear_a & ontable_a & handempty_) -> 1.0 : (ontable_a' = false) & (clear_a' = false) & (handempty_' = false) & (holding_a' = true);
-	[pick_up_b] (clear_b & ontable_b & handempty_) -> 1.0 : (ontable_b' = false) & (clear_b' = false) & (handempty_' = false) & (holding_b' = true);
-	[put_down_a] holding_a -> 1.0 : (holding_a' = false) & (clear_a' = true) & (handempty_' = true) & (ontable_a' = true);
-	[put_down_b] holding_b -> 1.0 : (holding_b' = false) & (clear_b' = true) & (handempty_' = true) & (ontable_b' = true);
-	[stack_a_b] (holding_a & clear_b) -> 1.0 : (holding_a' = false) & (clear_b' = false) & (clear_a' = true) & (handempty_' = true) & (on_a_b' = true);
-	[stack_b_a] (holding_b & clear_a) -> 1.0 : (holding_b' = false) & (clear_a' = false) & (clear_b' = true) & (handempty_' = true) & (on_b_a' = true);
-	[unstack_a_b] (on_a_b & clear_a & handempty_) -> 1.0 : (holding_a' = true) & (clear_b' = true) & (clear_a' = false) & (handempty_' = false) & (on_a_b' = false);
-	[unstack_b_a] (on_b_a & clear_b & handempty_) -> 1.0 : (holding_b' = true) & (clear_a' = true) & (clear_b' = false) & (handempty_' = false) & (on_b_a' = false);
+	[dunk_package_package1] (true) & !not_setup -> 0.05 : (toilet_clogged' = true) & (bomb_defused' = (bomb_in_package_package1 ? true : bomb_defused)) + 0.95 : (bomb_defused' = (bomb_in_package_package1 ? true : bomb_defused));
+	[dunk_package_package2] (true) & !not_setup -> 0.05 : (toilet_clogged' = true) & (bomb_defused' = (bomb_in_package_package2 ? true : bomb_defused)) + 0.95 : (bomb_defused' = (bomb_in_package_package2 ? true : bomb_defused));
+	[dunk_package_package3] (true) & !not_setup -> 0.05 : (toilet_clogged' = true) & (bomb_defused' = (bomb_in_package_package3 ? true : bomb_defused)) + 0.95 : (bomb_defused' = (bomb_in_package_package3 ? true : bomb_defused));
+	[dunk_package_package4] (true) & !not_setup -> 0.05 : (toilet_clogged' = true) & (bomb_defused' = (bomb_in_package_package4 ? true : bomb_defused)) + 0.95 : (bomb_defused' = (bomb_in_package_package4 ? true : bomb_defused));
+	[dunk_package_package5] (true) & !not_setup -> 0.05 : (toilet_clogged' = true) & (bomb_defused' = (bomb_in_package_package5 ? true : bomb_defused)) + 0.95 : (bomb_defused' = (bomb_in_package_package5 ? true : bomb_defused));
+	[prob_setup_init] not_setup -> 0.2 : (bomb_in_package_package1' = true) & (not_setup' = false) + 0.2 : (bomb_in_package_package2' = true) & (not_setup' = false) + 0.2 : (bomb_in_package_package3' = true) & (not_setup' = false) + 0.2 : (bomb_in_package_package4' = true) & (not_setup' = false) + 0.2 : (bomb_in_package_package5' = true) & (not_setup' = false);
 endmodule
+
+label "goal" = (bomb_defused & !(toilet_clogged));
