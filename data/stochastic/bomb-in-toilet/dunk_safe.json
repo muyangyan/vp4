@@ -1,0 +1,7 @@
+[
+    {
+        "name": "Dunk package with bomb",
+        "if": "(not (bomb-in-package ?x))",
+        "then": "(dunk-package ?x)"
+    }
+]
