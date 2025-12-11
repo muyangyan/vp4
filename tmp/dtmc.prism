@@ -12,7 +12,8 @@ module main
 	on_b_b : bool init false;
 	ontable_a : bool init false;
 	ontable_b : bool init true;
-
-	[] ((on_a_b & clear_a)) & ((on_a_b & clear_a & handempty_)) -> 1.0 : (holding_a' = true) & (clear_b' = true) & (clear_a' = false) & (handempty_' = false) & (on_a_b' = false);
-	[] ((on_b_a & clear_b)) & ((on_b_a & clear_b & handempty_)) & !(((on_a_b & clear_a))) -> 1.0 : (holding_b' = true) & (clear_a' = true) & (clear_b' = false) & (handempty_' = false) & (on_b_a' = false);
+	[put-down] holding_a -> 1.0 : (holding_a' = false) & (clear_a' = true) & (handempty_' = true) & (ontable_a' = true);
+	[put-down] holding_b -> 1.0 : (holding_b' = false) & (clear_b' = true) & (handempty_' = true) & (ontable_b' = true);
+	[unstack] on_a_b & clear_a & handempty_ -> 1.0 : (holding_a' = true) & (clear_b' = true) & (clear_a' = false) & (handempty_' = false) & (on_a_b' = false);
+	[unstack] on_b_a & clear_b & handempty_ -> 1.0 : (holding_b' = true) & (clear_a' = true) & (clear_b' = false) & (handempty_' = false) & (on_b_a' = false);
 endmodule
