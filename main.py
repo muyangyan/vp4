@@ -2,9 +2,7 @@ from fire import Fire
 import json
 import plado
 import subprocess
-from src.pddl_parser import PDDLToPRISM
-
-
+from src.pddl_parser import pddl_to_mdp, PPDDLToPRISM
 
 
 def verify_property(dtmc_file: str, property_file: str) -> str:
@@ -50,18 +48,10 @@ def run_single(
     policy_file: str = "data/deterministic/blocksworld/policy.json", 
     property_file: str = "data/deterministic/blocksworld/property.pctl",
 ):
-
-    translator = PDDLToPRISM(domain_file, problem_file)
-
     # parse pddl domain, problem -> mdp file =========================
-    translator.ground_state_variables()
-    translator.ground_actions_logic()
-
-    mdp_text = translator.generate_mdp()
-
-    with open("tmp/mdp.prism", "w") as f:
+    mdp_text, translator = mdp_to_pddl(domain_file, problem_file)
+    with open("tmp/generated_mdp.prism", "w") as f:
         f.write(mdp_text)
-
 
     # apply policy to get actions -> dtmc file =======================
     with open(policy_file, "r") as f:
@@ -69,11 +59,11 @@ def run_single(
 
     dtmc_text = translator.generate_dtmc(policy)
 
-    with open("tmp/dtmc.prism", "w") as f:
+    with open("tmp/generated_dtmc.prism", "w") as f:
         f.write(dtmc_text)
 
     # call prism on dtmc file, with property =========================
-    result = verify_property("tmp/dtmc.prism", property_file)
+    result = verify_property("tmp/generated_dtmc.prism", property_file)
 
     # print result
     print(result)
