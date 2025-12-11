@@ -49,7 +49,7 @@ def run_single(
     property_file: str = "data/deterministic/blocksworld/property.pctl",
 ):
     # parse pddl domain, problem -> mdp file =========================
-    mdp_text, translator = mdp_to_pddl(domain_file, problem_file)
+    mdp_text, translator = pddl_to_mdp(domain_file, problem_file)
     with open("tmp/generated_mdp.prism", "w") as f:
         f.write(mdp_text)
 

@@ -501,7 +501,7 @@ class PPDDLToPRISM:
         if (g := self.generate_goal_label()): lines.append(g)
         return "\n".join(lines)
 
-def pddl_to_mdp(domain_file: str, problem_file: str) -> str, PPDDLToPRISM:
+def pddl_to_mdp(domain_file: str, problem_file: str) -> Tuple[str, PPDDLToPRISM]:
     translator = PPDDLToPRISM(domain_file, problem_file)
     translator.ground_state_variables()
     translator.ground_actions_logic()
