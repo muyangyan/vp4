@@ -2,21 +2,21 @@
     {
         "name": "Down-if-able",
         "if": "at_1_2_3 & inc_3_4 & !wall_2_4",
-        "then": "move-down"
+        "then": "move-down_1"
     },
     {
         "name": "Right-if-able",
         "if": "at_1_2_3 & inc_2_4 & !wall_4_3",
-        "then": "move-right"
+        "then": "move-right_1"
     },
     {
         "name": "Up-if-able",
         "if": "at_1_2_3 & dec_3_4 & !wall_2_4",
-        "then": "move-up"
+        "then": "move-up_1"
     },
     {
         "name": "Left-if-able",
         "if": "at_1_2_3 & dec_2_4 & !wall_4_3",
-        "then": "move-left"
+        "then": "move-left_1"
     }
 ]
