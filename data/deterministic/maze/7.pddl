@@ -5,7 +5,7 @@
 ;;   1 2 3
 ;; 1 A . .
 ;; 2 . . .
-;; 3 . . G
+;; 3 G . .
 
 (define (problem maze-3x3-open)
   (:domain maze)
@@ -21,5 +21,5 @@
     ;; Initial State
     (at agent1 p1 p1)
   )
-  (:goal (at agent1 p3 p3))
+  (:goal (at agent1 p1 p3))
 )

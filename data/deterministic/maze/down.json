@@ -1,0 +1,7 @@
+[
+    {
+        "name": "Down-if-able",
+        "if": "at_1_2_3 & inc_3_4 & !wall_2_4",
+        "then": "move-down_1_2_3_4"
+    }
+]

@@ -436,7 +436,6 @@ class PPDDLToPRISM:
         # write rules from policy
         for rule in policy:
             guard = rule['if']
-            print('guard:', guard)
 
             def parse_guard_predicates(guard: str):
                 """
@@ -509,7 +508,7 @@ class PPDDLToPRISM:
 
         lines.append("endmodule")
         lines.append("")
-        print('done generating dtmc')
+        print('Done generating dtmc')
         
         # Write Goal Label
         if (g := self.generate_goal_label()): lines.append(g)

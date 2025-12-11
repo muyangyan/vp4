@@ -40,6 +40,7 @@ def run_single(
     problem_file: str = "1.pddl",
     policy_file: str = "all_on_table.json", 
     property_file: str = "property.pctl",
+    run_prism: str = "True",
 ):
     # parse pddl domain, problem -> mdp file =========================
     domain_file = os.path.join(domain_dir, "domain.pddl")
@@ -60,12 +61,17 @@ def run_single(
     with open("tmp/dtmc.prism", "w") as f:
         f.write(dtmc_text)
 
-    # call prism on dtmc file, with property =========================
+    # call prism on dtmc file, with property, if provided ============
+    if run_prism != "True":
+        return
+
+    print(f"Verifying property using generated dtmc...")
     result = verify_property("tmp/dtmc.prism", property_file)
 
     # print result
     print(f"Result for problem `{problem_file}`, policy `{policy_file}`, property `{property_file}`: ")
     print(result)
+    return
 
 if __name__ == "__main__":
     Fire(run_single)

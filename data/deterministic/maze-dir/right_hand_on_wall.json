@@ -2,42 +2,42 @@
     {
         "name": "Trivial down",
         "if": "dir-down & at_1_2_3 & inc_3_4 & !wall_2_4 & (!dec_2_5 | (dec_2_5 & wall_5_3))",
-        "then": "move-down_1"
+        "then": "move-down_1_2_3"
     },
     {
         "name": "Down-left recovery",
         "if": "dir-down & at_1_2_3 & dec_2_4 & !wall_4_3 & inc_3_5 & wall_4_5",
-        "then": "move-left_1"
+        "then": "move-left_1_2_3"
     },
     {
         "name": "Trivial left",
         "if": "dir-left & at_1_2_3 & dec_2_4 & !wall_4_3 & (!dec_3_5 | (dec_3_5 & wall_2_5))",
-        "then": "move-left_1"
+        "then": "move-left_1_2_3"
     },
     {
         "name": "Left-up recovery",
         "if": "dir-left & at_1_2_3 & dec_3_4 & !wall_2_4 & inc_2_5 & wall_5_4",
-        "then": "move-up_1"
+        "then": "move-up_1_2_3"
     },
     {
         "name": "Trivial up",
         "if": "dir-up & at_1_2_3 & dec_3_4 & !wall_2_4 & (!inc_2_5 | (inc_2_5 & wall_5_3))",
-        "then": "move-up_1"
+        "then": "move-up_1_2_3"
     },
     {
         "name": "Up-right recovery",
         "if": "dir-up & at_1_2_3 & inc_2_4 & !wall_4_3 & dec_3_5 & wall_4_5",
-        "then": "move-right_1"
+        "then": "move-right_1_2_3"
     },
     {
         "name": "Trivial right",
         "if": "dir-right & at_1_2_3 & inc_2_4 & !wall_4_3 & (!inc_3_5 | (inc_3_5 & wall_2_5))",
-        "then": "move-right_1"
+        "then": "move-right_1_2_3"
     },
     {
         "name": "Right-down recovery",
         "if": "dir-right & at_1_2_3 & inc_3_4 & !wall_2_4 & dec_2_5 & wall_5_4",
-        "then": "move-down_1"
+        "then": "move-down_1_2_3"
     },
     {
         "name": "Stuck-rotate from down",
@@ -61,7 +61,7 @@
     },
     {
         "name": "Default",
-        "if": "",
-        "then": "move-down_1"
+        "if": "at_1_2_3",
+        "then": "move-down_1_2_3"
     }
 ]

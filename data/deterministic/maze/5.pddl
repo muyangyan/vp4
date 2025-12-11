@@ -1,4 +1,4 @@
-;; 5x5 maze as a counter-example for right-hand-on-wall technique
+;; 5p5 maze as a counter-example for right-hand-on-wall technique
 
 ;;   1 2 3 4 5
 ;; 1 . . . . .
@@ -7,21 +7,19 @@
 ;; 4 . . . . .
 ;; 5 . . . . .
 
-(define (problem maze-5x5)
+(define (problem maze-5p5)
   (:domain maze)
   (:objects
        agent1 - agent
-       x1 x2 x3 x4 x5 y1 y2 y3 y4 y5 - position
+       p1 p2 p3 p4 p5 - position
   )
   (:init
-    (inc x1 x2) (inc x2 x3) (inc x3 x4) (inc x4 x5)
-    (inc y1 y2) (inc y2 y3) (inc y3 y4) (inc y4 y5)
-    (dec x5 x4) (dec x4 x3) (dec x3 x2) (dec x2 x1) 
-    (dec y5 y4) (dec y4 y3) (dec y3 y2) (dec y2 y1) 
+    (inc p1 p2) (inc p2 p3) (inc p3 p4) (inc p4 p5)
+    (dec p5 p4) (dec p4 p3) (dec p3 p2) (dec p2 p1) 
 
-    (wall x3 y3)
+    (wall p3 p3)
 
-    (at agent1 x4 y3))
+    (at agent1 p4 p3))
   (:goal
-    (at agent1 x5 y3))
+    (at agent1 p5 p3))
   )
