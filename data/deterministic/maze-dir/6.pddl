@@ -16,8 +16,6 @@
   )
   (:init 
     (inc p1 p2) (inc p2 p3)
-    (inc p1 p2) (inc p2 p3)
-    (dec p3 p2) (dec p2 p1)
     (dec p3 p2) (dec p2 p1)
     
     ;; Wall at x=2, y=1

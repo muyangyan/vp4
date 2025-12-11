@@ -1,6 +1,6 @@
-;; adapted from: https://github.com/SoarGroup/Domains-Planning-Domain-Definition-Language/blob/master/pddl/maze6x6.pddl
+;; adapted from: https://github.com/SoarGroup/Domains-Planning-Domain-Definition-Language/blob/master/pddl/maze6p6.pddl
 
-;; 6x6 maze
+;; 6p6 maze
 
 ;;   1 2 3 4 5 6
 ;; 1 A . . . . .
@@ -10,25 +10,23 @@
 ;; 5 . W W W . .
 ;; 6 . . . . . .
 
-(define (problem maze-dir-6x6)
+(define (problem maze-dir-6p6)
   (:domain maze-dir)
   (:objects
        agent1 - agent
-       x1 x2 x3 x4 x5 x6 y1 y2 y3 y4 y5 y6 - position
+       p1 p2 p3 p4 p5 p6 - position
   )
   (:init
-    (inc x1 x2) (inc x2 x3) (inc x3 x4) (inc x4 x5) (inc x5 x6)
-    (inc y1 y2) (inc y2 y3) (inc y3 y4) (inc y4 y5) (inc y5 y6)
-    (dec x6 x5) (dec x5 x4) (dec x4 x3) (dec x3 x2) (dec x2 x1) 
-    (dec y6 y5) (dec y5 y4) (dec y4 y3) (dec y3 y2) (dec y2 y1) 
+    (inc p1 p2) (inc p2 p3) (inc p3 p4) (inc p4 p5) (inc p5 p6)
+    (dec p6 p5) (dec p5 p4) (dec p4 p3) (dec p3 p2) (dec p2 p1) 
 
-    (wall x1 y3) (wall x2 y3) (wall x3 y3) (wall x4 y3)
-    (wall x5 y4)
-    (wall x2 y5) (wall x3 y5) (wall x4 y5)
+    (wall p1 p3) (wall p2 p3) (wall p3 p3) (wall p4 p3)
+    (wall p5 p4)
+    (wall p2 p5) (wall p3 p5) (wall p4 p5)
 
-    (at agent1 x1 y1)
+    (at agent1 p1 p1)
     (dir-down)
   )
   (:goal
-    (at agent1 x3 y4))
+    (at agent1 p3 p4))
   )

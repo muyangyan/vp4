@@ -1,4 +1,4 @@
-;; An agent starts at (1,1) in a 3x3 grid.
+;; An agent starts at (1,1) in a 3p3 grid.
 ;; The goal is to reach (3,1).
 ;; There is a wall at (2,1), forcing the agent to go around it. 
 
@@ -8,22 +8,20 @@
 ;; 3 . . .
 
 
-(define (problem maze-3x3-obstacle)
+(define (problem maze-3p3-obstacle)
   (:domain maze)
   (:objects 
     agent1 - agent
-    x1 x2 x3 y1 y2 y3 - position
+    p1 p2 p3 - position
   )
   (:init 
-    (inc x1 x2) (inc x2 x3)
-    (inc y1 y2) (inc y2 y3)
-    (dec x3 x2) (dec x2 x1)
-    (dec y3 y2) (dec y2 y1)
+    (inc p1 p2) (inc p2 p3)
+    (dec p3 p2) (dec p2 p1)
     
     ;; Wall at x=2, y=1
-    (wall x2 y1)
+    (wall p2 p1)
     
-    (at agent1 x1 y1)
+    (at agent1 p1 p1)
   )
-  (:goal (at agent1 x3 y1))
+  (:goal (at agent1 p3 p1))
 )
