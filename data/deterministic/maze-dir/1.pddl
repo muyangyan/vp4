@@ -22,7 +22,7 @@
     
     ;; Initial State
     (at agent1 x1 y1)
-    (dir=down)
+    (dir_down)
   )
   (:goal (at agent1 x3 y3))
 )

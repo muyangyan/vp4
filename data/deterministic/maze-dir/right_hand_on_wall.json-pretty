@@ -3,7 +3,7 @@
         "name": "Trivial down",
         "comment": "If facing down with a wall or edge to the right-hand side (left), step down",
         "if": "
-                dir=down &
+                dir_down &
                 at_1_2_3 &
                 inc_3_4 &
                 !wall_2_4 &
@@ -15,7 +15,7 @@
         "name": "Down-left recovery",
         "comment": "If stepped down with RH on wall and wall is now gone, must go left to adjust"
         "if": "
-                dir=down &
+                dir_down &
                 at_1_2_3 &
                 dec_2_4 &
                 !wall_4_3 &
@@ -28,7 +28,7 @@
         "name": "Trivial left",
         "comment": "If facing left with a wall or edge to the right-hand side above, step left",
         "if": "
-                dir=left &
+                dir_left &
                 at_1_2_3 &
                 dec_2_4 &
                 !wall_4_3 &
@@ -40,7 +40,7 @@
         "name": "Left-up recovery",
         "comment": "If stepped left with RH on wall and wall is now gone, must go up to adjust",
         "if": "
-                dir=left &
+                dir_left &
                 at_1_2_3 & 
                 dec_3_4 &
                 !wall_2_4 &
@@ -53,7 +53,7 @@
         "name": "Trivial up",
         "comment": "If facing up with a wall or edge to the right-hand size right, step up",
         "if": "
-                dir=up &
+                dir_up &
                 at_1_2_3 &
                 dec_3_4 &
                 !wall_2_4 &
@@ -65,7 +65,7 @@
         "name": "Up-right recovery",
         "comment": "If stepped up with RH on wall and wall is now gone, must do right to adjust",
         "if": "
-                dir=up &
+                dir_up &
                 at_1_2_3 &
                 inc_2_4 &
                 !wall_4_3 &
@@ -78,7 +78,7 @@
         "name": "Trivial right",
         "comment": "If facing right with a wall or edge to the right-hand side below, step right",
         "if": "
-                dir=right &
+                dir_right &
                 at_1_2_3 &
                 inc_2_4 &
                 !wall_4_3 &
@@ -90,7 +90,7 @@
         "name": "Right-down recovery",
         "comment": "If stepped right with RH on wall and wall is now gone, must go down to adjust",
         "if": "
-                dir=right &
+                dir_right &
                 at_1_2_3 &
                 inc_3_4 &
                 !wall_2_4 &
@@ -103,7 +103,7 @@
         "name": "Stuck-rotate from down",
         "comment": "If cannot step down, face right",
         "if": "
-                dir=down &
+                dir_down &
                 at_1_2_3 &
                 (!inc_3_4 | (inc_3_4 & wall_2_4))
             ",
@@ -113,7 +113,7 @@
         "name": "Stuck-rotate from right",
         "comment": "If cannot step right, face up",
         "if": "
-                dir=right &
+                dir_right &
                 at_1_2_3 &
                 (!inc_2_4 | (inc_2_4 & wall_4_3))
             ",
@@ -123,7 +123,7 @@
         "name": "Stuck-rotate from up",
         "comment": "If cannot step up, face left",
         "if": "
-                dir=up &
+                dir_up &
                 at_1_2_3 &
                 (!dec_3_4 | (dec_3_4 & wall_2_4))
             ",
@@ -133,7 +133,7 @@
         "name": "Stuck-rotate from left",
         "comment": "If cannot step left, face down",
         "if": "
-                dir=left &
+                dir_left &
                 at_1_2_3 &
                 (!dec_2_4 | (dec_2_4 & wall_4_3))
             ",
