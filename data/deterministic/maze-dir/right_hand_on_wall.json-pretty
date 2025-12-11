@@ -1,0 +1,148 @@
+[
+    {
+        "name": "Trivial down",
+        "comment": "If facing down with a wall or edge to the right-hand side (left), step down",
+        "if": "
+                dir=down &
+                at_1_2_3 &
+                inc_3_4 &
+                !wall_2_4 &
+                (!dec_2_5 | (dec_2_5 & wall_5_3))
+            ",
+        "then": "move-down"
+    },
+    {
+        "name": "Down-left recovery",
+        "comment": "If stepped down with RH on wall and wall is now gone, must go left to adjust"
+        "if": "
+                dir=down &
+                at_1_2_3 &
+                dec 2 4 &
+                !wall 4 3 &
+                inc 3 5 &
+                wall 4 5
+            ",
+        "then": "move-left"
+    },
+    {
+        "name": "Trivial left",
+        "comment": "If facing left with a wall or edge to the right-hand side above, step left",
+        "if": "
+                dir=left &
+                at_1_2_3 &
+                dec 2 4 &
+                !wall 4 3 &
+                (!dec 3 5 | (dec 3 5 & wall 2 5))
+            ",
+        "then": "move-left"
+    },
+    {
+        "name": "Left-up recovery",
+        "comment": "If stepped left with RH on wall and wall is now gone, must go up to adjust",
+        "if": "
+                dir=left &
+                at_1_2_3 & 
+                dec 3 4 &
+                !wall 2 4 &
+                inc 2 5 &
+                wall 5 4
+            ",
+        "then": "move-up"
+    },
+    {
+        "name": "Trivial up",
+        "comment": "If facing up with a wall or edge to the right-hand size right, step up",
+        "if": "
+                dir=up &
+                at_1_2_3 &
+                dec 3 4 &
+                !wall 2 4 &
+                (!inc 2 5 | (inc 2 5 & wall 5 3))
+            ",
+        "then": "move-up"
+    },
+    {
+        "name": "Up-right recovery",
+        "comment": "If stepped up with RH on wall and wall is now gone, must do right to adjust",
+        "if": "
+                dir=up &
+                at_1_2_3 &
+                inc 2 4 &
+                !wall 4 3 &
+                dec 3 5 &
+                wall 4 5
+            ",
+        "then": "move-right"
+    },
+    {
+        "name": "Trivial right",
+        "comment": "If facing right with a wall or edge to the right-hand side below, step right",
+        "if": "
+                dir=right &
+                at_1_2_3 &
+                inc 2 4 &
+                !wall 4 3 &
+                (!inc 3 5 | (inc 3 5 & wall 2 5))
+            ",
+        "then": "move-right"
+    },
+    {
+        "name": "Right-down recovery",
+        "comment": "If stepped right with RH on wall and wall is now gone, must go down to adjust",
+        "if": "
+                dir=right &
+                at_1_2_3 &
+                inc 3 4 &
+                !wall 2 4 &
+                dec 2 5 &
+                wall 5 4
+            ",
+        "then": "move-down"
+    },
+    {
+        "name": "Stuck-rotate from down",
+        "comment": "If cannot step down, face right",
+        "if": "
+                dir=down &
+                at_1_2_3 &
+                (!inc 3 4 | (inc 3 4 & wall 2 4))
+            ",
+        "then": "face-right"
+    },
+    {
+        "name": "Stuck-rotate from right",
+        "comment": "If cannot step right, face up",
+        "if": "
+                dir=right &
+                at_1_2_3 &
+                (!inc 2 4 | (inc 2 4 & wall 4 3))
+            ",
+        "then": "face-up"
+    },
+    {
+        "name": "Stuck-rotate from up",
+        "comment": "If cannot step up, face left",
+        "if": "
+                dir=up &
+                at_1_2_3 &
+                (!dec 3 4 | (dec 3 4 & wall 2 4))
+            ",
+        "then": "face-left"
+    },
+    {
+        "name": "Stuck-rotate from left",
+        "comment": "If cannot step left, face down",
+        "if": "
+                dir=left &
+                at_1_2_3 &
+                (!dec 2 4 | (dec 2 4 & wall 4 3))
+            ",
+        "then": "face-down"
+    },
+    {
+        "name": "Default",
+        "comment": "If lost, walk down until we find a wall",
+        "if": "",
+        "then": "move-down"
+    }
+]

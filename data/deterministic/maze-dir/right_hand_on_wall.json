@@ -1,62 +1,62 @@
 [
     {
         "name": "Trivial down",
-        "if": "(and (dir=down) (at ?omf ?x ?y) (inc ?y ?yn) (not (wall ?x ?yn)) (or (not (dec ?x ?xp)) (and (dec ?x ?xp) (wall ?xp ?y))))",
+        "if": "dir=down & at_1_2_3 & inc_3_4 & !wall_2_4 & (!dec_2_5 | (dec_2_5 & wall_5_3))",
         "then": "move-down"
     },
     {
         "name": "Down-left recovery",
-        "if": "(and (dir=down) (at ?omf ?x ?y) (dec ?x ?xp) (not (wall ?xp ?y)) (inc ?y ?yn) (wall ?xp ?yn))",
+        "if": "dir=down & at_1_2_3 & dec 2 4 & !wall 4 3 & inc 3 5 & wall 4 5",
         "then": "move-left"
     },
     {
         "name": "Trivial left",
-        "if": "(and (dir=left) (at ?omf ?x ?y) (dec ?x ?xp) (not (wall ?xp ?y)) (or (not (dec ?y ?yp)) (and (dec ?y ?yp) (wall ?x ?yp))))",
+        "if": "dir=left & at_1_2_3 & dec 2 4 & !wall 4 3 & (!dec 3 5 | (dec 3 5 & wall 2 5))",
         "then": "move-left"
     },
     {
         "name": "Left-up recovery",
-        "if": "(and (dir=left) (at ?omf ?x ?y) (dec ?y ?yp) (not (wall ?x ?yp)) (inc ?x ?xn) (wall ?xn ?yp))",
+        "if": "dir=left & at_1_2_3 & dec 3 4 & !wall 2 4 & inc 2 5 & wall 5 4",
         "then": "move-up"
     },
     {
         "name": "Trivial up",
-        "if": "(and (dir=up) (at ?omf ?x ?y) (dec ?y ?yp) (not (wall ?x ?yp)) (or (not (inc ?x ?xn)) (and (inc ?x ?xn) (wall ?xn ?y))))",
+        "if": "dir=up & at_1_2_3 & dec 3 4 & !wall 2 4 & (!inc 2 5 | (inc 2 5 & wall 5 3))",
         "then": "move-up"
     },
     {
         "name": "Up-right recovery",
-        "if": "(and (dir=up) (at ?omf ?x ?y) (inc ?x ?xn) (not (wall ?xn ?y)) (dec ?y ?yp) (wall ?xn ?yp))",
+        "if": "dir=up & at_1_2_3 & inc 2 4 & !wall 4 3 & dec 3 5 & wall 4 5",
         "then": "move-right"
     },
     {
         "name": "Trivial right",
-        "if": "(and (dir=right) (at ?omf ?x ?y) (inc ?x ?xn) (not (wall ?xn ?y)) (or (not (inc ?y ?yn)) (and (inc ?y ?yn) (wall ?x ?yn))))",
+        "if": "dir=right & at_1_2_3 & inc 2 4 & !wall 4 3 & (!inc 3 5 | (inc 3 5 & wall 2 5))",
         "then": "move-right"
     },
     {
         "name": "Right-down recovery",
-        "if": "(and (dir=right) (at ?omf ?x ?y) (inc ?y ?yn) (not (wall ?x ?yn)) (dec ?x ?xp) (wall ?xp ?yn))",
+        "if": "dir=right & at_1_2_3 & inc 3 4 & !wall 2 4 & dec 2 5 & wall 5 4",
         "then": "move-down"
     },
     {
         "name": "Stuck-rotate from down",
-        "if": "(and (dir=down) (at ?omf ?x ?y) (or (not (inc ?y ?yn)) (and (inc ?y ?yn) (wall ?x ?yn))))",
+        "if": "dir=down & at_1_2_3 & (!inc 3 4 | (inc 3 4 & wall 2 4))",
         "then": "face-right"
     },
     {
         "name": "Stuck-rotate from right",
-        "if": "(and (dir=right) (at ?omf ?x ?y) (or (not (inc ?x ?xn)) (and (inc ?x ?xn) (wall ?xn ?y))))",
+        "if": "dir=right & at_1_2_3 & (!inc 2 4 | (inc 2 4 & wall 4 3))",
         "then": "face-up"
     },
     {
         "name": "Stuck-rotate from up",
-        "if": "(and (dir=up) (at ?omf ?x ?y) (or (not (dec ?y ?yp)) (and (dec ?y ?yp) (wall ?x ?yp))))",
+        "if": "dir=up & at_1_2_3 & (!dec 3 4 | (dec 3 4 & wall 2 4))",
         "then": "face-left"
     },
     {
         "name": "Stuck-rotate from left",
-        "if": "(and (dir=left) (at ?omf ?x ?y) (or (not (dec ?x ?xp)) (and (dec ?x ?xp) (wall ?xp ?y))))",
+        "if": "dir=left & at_1_2_3 & (!dec 2 4 | (dec 2 4 & wall 4 3))",
         "then": "face-down"
     },
     {
