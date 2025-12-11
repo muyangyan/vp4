@@ -70,6 +70,7 @@ def run_single(
     result = verify_property("tmp/dtmc.prism", property_file)
 
     # print result
+    print(f"Result for problem `{problem_file}`, policy `{policy_file}`, property `{property_file}`: ")
     print(result)
 
 if __name__ == "__main__":
