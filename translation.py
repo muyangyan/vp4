@@ -445,6 +445,8 @@ class PPDDLToPRISM:
                 predicate_strs = [pred.strip().rstrip('_') for pred in guard.split('&')]
                 predicate_args_map = {}
                 for pred in predicate_strs:
+                    if pred.startswith('!'):
+                        pred = pred[1:]  # Remove the leading '!'
                     match = re.match(r'([a-zA-Z\-]+)((?:_\d+)*)$', pred)
                     if match:
                         name = match.group(1)

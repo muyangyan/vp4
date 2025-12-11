@@ -6,7 +6,7 @@
   },
   {
     "name": "unstack",
-    "if": "on_1_2 & clear_1 & handempty",
+    "if": "on_1_2 & clear_1 & emptyhand",
     "then": "unstack_1_2"
   }
 ]
