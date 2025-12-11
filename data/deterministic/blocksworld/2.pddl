@@ -9,5 +9,5 @@
     (clear a) (clear b) (clear c)
     (handempty)
   )
-  (:goal (and (on b a) (on c b) (clear c) (on-table a)))
+  (:goal (and (on b a) (on c b) (clear c) (ontable a)))
 )
