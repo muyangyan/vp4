@@ -9,7 +9,7 @@
                 !wall_2_4 &
                 (!dec_2_5 | (dec_2_5 & wall_5_3))
             ",
-        "then": "move-down"
+        "then": "move-down_1"
     },
     {
         "name": "Down-left recovery",
@@ -22,7 +22,7 @@
                 inc_3_5 &
                 wall_4_5
             ",
-        "then": "move-left"
+        "then": "move-left_1"
     },
     {
         "name": "Trivial left",
@@ -34,7 +34,7 @@
                 !wall_4_3 &
                 (!dec_3_5 | (dec_3_5 & wall_2_5))
             ",
-        "then": "move-left"
+        "then": "move-left_1"
     },
     {
         "name": "Left-up recovery",
@@ -47,7 +47,7 @@
                 inc_2_5 &
                 wall_5_4
             ",
-        "then": "move-up"
+        "then": "move-up_1"
     },
     {
         "name": "Trivial up",
@@ -59,7 +59,7 @@
                 !wall_2_4 &
                 (!inc_2_5 | (inc_2_5 & wall_5_3))
             ",
-        "then": "move-up"
+        "then": "move-up_1"
     },
     {
         "name": "Up-right recovery",
@@ -72,7 +72,7 @@
                 dec_3_5 &
                 wall_4_5
             ",
-        "then": "move-right"
+        "then": "move-right_1"
     },
     {
         "name": "Trivial right",
@@ -84,7 +84,7 @@
                 !wall_4_3 &
                 (!inc_3_5 | (inc_3_5 & wall_2_5))
             ",
-        "then": "move-right"
+        "then": "move-right_1"
     },
     {
         "name": "Right-down recovery",
@@ -97,7 +97,7 @@
                 dec_2_5 &
                 wall_5_4
             ",
-        "then": "move-down"
+        "then": "move-down_1"
     },
     {
         "name": "Stuck-rotate from down",
@@ -143,6 +143,6 @@
         "name": "Default",
         "comment": "If lost, walk down until we find a wall",
         "if": "",
-        "then": "move-down"
+        "then": "move-down_1"
     }
 ]
