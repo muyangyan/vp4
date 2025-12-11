@@ -391,6 +391,8 @@ class PPDDLToPRISM:
                 if updates is not None:
                     self.ground_actions.append({"name": action_name, "guard": guard, "updates": updates})
 
+        self.action_update_map = {action['name']: action['updates'] for action in self.ground_actions}
+
     def _write_initial_state(self) -> List[str]:
         """Writes the variables block for PRISM, setting initial values."""
         lines = []
