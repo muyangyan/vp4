@@ -24,7 +24,7 @@
     (wall x2 y1)
     
     (at agent1 x1 y1)
-    (dir_down)
+    (dir-down)
   )
   (:goal (at agent1 x3 y1))
 )
