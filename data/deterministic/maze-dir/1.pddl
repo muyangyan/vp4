@@ -11,16 +11,18 @@
   (:domain maze-dir)
   (:objects 
     agent1 - agent
-    p1 p2 p3 - position
+    x1 x2 x3 y1 y2 y3 - position
   )
   (:init 
     ;; Define Grid Logic
-    (inc p1 p2) (inc p2 p3)
-    (dec p3 p2) (dec p2 p1)
+    (inc x1 x2) (inc x2 x3)
+    (inc y1 y2) (inc y2 y3)
+    (dec x3 x2) (dec x2 x1)
+    (dec y3 y2) (dec y2 y1)
     
     ;; Initial State
-    (at agent1 p1 p1)
+    (at agent1 x1 y1)
     (dir=down)
   )
-  (:goal (at agent1 p3 p3))
+  (:goal (at agent1 x3 y3))
 )
