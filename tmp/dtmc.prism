@@ -1,23 +1,13 @@
 dtmc
 
 module main
-	clear_a : bool init true;
-	clear_b : bool init false;
-	handempty : bool init true;
-	holding_a : bool init false;
-	holding_b : bool init false;
-	on_a_a : bool init false;
-	on_a_b : bool init true;
-	on_b_a : bool init false;
-	on_b_b : bool init false;
-	ontable_a : bool init false;
-	ontable_b : bool init true;
-	[put_down] holding_a -> 1.0 : (holding_a' = false) & (clear_a' = true) & (handempty' = true) & (ontable_a' = true);
-	[put_down] holding_b -> 1.0 : (holding_b' = false) & (clear_b' = true) & (handempty' = true) & (ontable_b' = true);
-	[unstack] on_a_a & clear_a & handempty -> 1.0 : (holding_a' = true) & (clear_a' = false) & (handempty' = false) & (on_a_a' = false);
-	[unstack] on_a_b & clear_a & handempty -> 1.0 : (holding_a' = true) & (clear_b' = true) & (clear_a' = false) & (handempty' = false) & (on_a_b' = false);
-	[unstack] on_b_a & clear_b & handempty -> 1.0 : (holding_b' = true) & (clear_a' = true) & (clear_b' = false) & (handempty' = false) & (on_b_a' = false);
-	[unstack] on_b_b & clear_b & handempty -> 1.0 : (holding_b' = true) & (clear_b' = false) & (handempty' = false) & (on_b_b' = false);
+	bomb_defused : bool init false;
+	bomb_in_package_package1 : bool init false;
+	bomb_in_package_package2 : bool init false;
+	not_setup : bool init true;
+	toilet_clogged : bool init false;
+	[Dunk_package_with_bomb] bomb_in_package_package1 -> 0.05 : (toilet_clogged' = true) & (bomb_defused' = (bomb_in_package_package1 ? true : bomb_defused)) + 0.95 : (bomb_defused' = (bomb_in_package_package1 ? true : bomb_defused));
+	[Dunk_package_with_bomb] bomb_in_package_package2 -> 0.05 : (toilet_clogged' = true) & (bomb_defused' = (bomb_in_package_package2 ? true : bomb_defused)) + 0.95 : (bomb_defused' = (bomb_in_package_package2 ? true : bomb_defused));
 endmodule
 
-label "goal" = (on_b_a & ontable_a & clear_b);
+label "goal" = (bomb_defused & !(toilet_clogged));

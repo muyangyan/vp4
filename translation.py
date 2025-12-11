@@ -491,7 +491,7 @@ class PPDDLToPRISM:
                 action_update_str = " + ".join([f"{prob} : {update}" for prob, update in action_update])
 
 
-                rule_name = rule['name'].replace('-', '_')
+                rule_name = rule['name'].replace('-', '_').replace(' ', '_')
                 rule_line = f"\t[{rule_name}] {grounded_guard} -> {action_update_str};"
                 lines.append(rule_line)
 
