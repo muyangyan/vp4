@@ -439,10 +439,11 @@ class PPDDLToPRISM:
 
             def parse_guard_predicates(guard: str):
                 """
-                Given a guard string like 'on_1_2 & clear_1 & handempty_ & pick-up_1',
+                Given a guard string like 'on_1_2 & clear_1 | handempty_ & pick-up_1',
                 return a dict mapping predicate names to lists of their arguments as strings.
+                Now splits by both & and |.
                 """
-                predicate_strs = [pred.strip().rstrip('_') for pred in guard.split('&')]
+                predicate_strs = [pred.strip().rstrip('_') for pred in re.split(r'[&|]', guard)]
                 predicate_args_map = {}
                 for pred in predicate_strs:
                     if pred.startswith('!'):
