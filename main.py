@@ -45,7 +45,7 @@ def verify_property(dtmc_file: str, property_file: str) -> str:
 def run_single(
     domain_file: str = "data/deterministic/blocksworld/domain.pddl",
     problem_file: str = "data/deterministic/blocksworld/1.pddl",
-    policy_file: str = "data/deterministic/blocksworld/policy.json", 
+    policy_file: str = "data/deterministic/blocksworld/all_on_table.json", 
     property_file: str = "data/deterministic/blocksworld/property.pctl",
 ):
     # parse pddl domain, problem -> mdp file =========================

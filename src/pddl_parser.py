@@ -3,6 +3,7 @@ import tempfile
 import os
 import itertools
 from typing import List, Dict, Tuple, Any, Optional
+import re
 
 # --- PLADO IMPORT & MONKEY PATCH ---
 # We patch the Plado parser to bypass its sanity checks, which are buggy
@@ -40,6 +41,9 @@ class PPDDLToPRISM:
         self.objects = self._collect_objects()
         self.ground_atoms = []
         self.ground_actions = []
+
+        # define helper maps
+        self.name_to_pred_map = {n:p for n, p in zip([p.name for p in self.domain.predicates], self.domain.predicates)}
 
     # --- INLINE PREPROCESSOR ---
     def _preprocess(self, d_path, p_path):
@@ -219,6 +223,7 @@ class PPDDLToPRISM:
                 atom_name = self._predicate_to_prism(predicate.name, args)
                 self.ground_atoms.append(atom_name)
         self.ground_atoms = sorted(list(set(self.ground_atoms)))
+
 
     def _translate_expression(self, expr: Any, var_map: Dict[str, str]) -> str:
         """Recursively translates a PDDL logical expression (precondition/goal) into a PRISM boolean string."""
@@ -412,9 +417,83 @@ class PPDDLToPRISM:
         
         # Write actions
         for action in self.ground_actions:
-            updates = [f"{prob} : {update}" for prob, update in action['updates']]
-            lines.append(f"\t[{action['name']}] {action['guard']} -> {' + '.join(updates)};")
-        
+            updates_strs = []
+            for prob, update in action['updates']:
+                updates_strs.append(f"{prob} : {update}")
+            full_update = " + ".join(updates_strs)
+            lines.append(f"\t[{action['name']}] {action['guard']} -> {full_update};")
+
+        lines.append("endmodule")
+        return "\n".join(lines)
+    
+    def generate_dtmc(self, policy: dict) -> str:
+        lines = ["dtmc", "", "module main"]
+
+        lines.extend(self._write_initial_state())
+
+        # write rules from policy
+        for rule in policy:
+            guard = rule['if']
+
+            def parse_guard_predicates(guard: str):
+                """
+                Given a guard string like 'on_1_2 & clear_1 & handempty_ & pick-up_1',
+                return a dict mapping predicate names to lists of their arguments as strings.
+                """
+                predicate_strs = [pred.strip().rstrip('_') for pred in guard.split('&')]
+                predicate_args_map = {}
+                for pred in predicate_strs:
+                    match = re.match(r'([a-zA-Z\-]+)((?:_\d+)*)$', pred)
+                    if match:
+                        name = match.group(1)
+                        args_section = match.group(2)
+                        args = [arg for arg in args_section.split('_') if arg]
+                        predicate_args_map[name] = args
+                    else:
+                        predicate_args_map[pred] = []
+                return predicate_args_map
+            
+            pred_args_map = parse_guard_predicates(guard)
+            all_args = [int(arg) for args in pred_args_map.values() for arg in args if arg.isdigit()]
+            max_arity = max(all_args) if all_args else 0
+
+            # search predicate by name to assign types to arguments
+            argument_types = ["object" for _ in range(max_arity)]
+            for pred_name, args in pred_args_map.items():
+                pred = self.name_to_pred_map[pred_name]
+                for i, arg in enumerate(args):
+                    argument_types[int(arg) - 1] = pred.parameters[i].type_name
+            object_lists = [self._get_objects_for_type(t) for t in argument_types]
+
+            # replace dashes with underscores in the guard string
+            guard = guard.replace('-', '_')
+
+            print('object_lists:', object_lists)
+            for args in itertools.product(*object_lists):
+                # Assume arg_map is now a character-to-character mapping, e.g. {'x':'a', 'y':'b'}
+                # Replace all occurrences of each variable character in the guard and then strings
+                def apply_arg_map(s, arg_map):
+                    for var, val in arg_map.items():
+                        # Just replace any occurrence of _var with _val (no need to check for trailing underscore)
+                        s = s.replace(f"_{var}", f"_{val}")
+                    return s
+
+                arg_map = {i+1:arg for i, arg in enumerate(args)}
+                grounded_guard = apply_arg_map(guard, arg_map)
+                grounded_action = apply_arg_map(rule['then'], arg_map)
+
+                grounded_action = grounded_action.replace('-', '_')
+                if grounded_action not in self.action_update_map.keys():
+                    continue
+
+                print('GROUNDED_ACTION:', grounded_action)
+                print('GROUNDED_GUARD:', grounded_guard)
+                action_update = self.action_update_map[grounded_action] # CHECK THIS
+                action_update_str = " + ".join([f"{prob} : {update}" for prob, update in action_update])
+
+                rule_line = f"\t[{rule['name']}] {grounded_guard} -> {action_update_str};"
+                lines.append(rule_line)
+
         lines.append("endmodule")
         lines.append("")
         
