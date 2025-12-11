@@ -436,6 +436,7 @@ class PPDDLToPRISM:
         # write rules from policy
         for rule in policy:
             guard = rule['if']
+            print('guard:', guard)
 
             def parse_guard_predicates(guard: str):
                 """
@@ -446,6 +447,12 @@ class PPDDLToPRISM:
                 predicate_strs = [pred.strip().rstrip('_') for pred in re.split(r'[&|]', guard)]
                 predicate_args_map = {}
                 for pred in predicate_strs:
+                    if pred == '':
+                        continue
+                    while pred.startswith('('):
+                        pred = pred[1:]
+                    while pred.endswith(')'):
+                        pred = pred[:-1]
                     if pred.startswith('!'):
                         pred = pred[1:]  # Remove the leading '!'
                     match = re.match(r'([a-zA-Z\-]+)((?:_\d+)*)$', pred)
@@ -467,6 +474,8 @@ class PPDDLToPRISM:
             for pred_name, args in pred_args_map.items():
                 pred = self.name_to_pred_map[pred_name]
                 for i, arg in enumerate(args):
+                    if argument_types[int(arg) - 1] != "object":
+                        continue
                     argument_types[int(arg) - 1] = pred.parameters[i].type_name
             object_lists = [self._get_objects_for_type(t) for t in argument_types]
 
@@ -500,6 +509,7 @@ class PPDDLToPRISM:
 
         lines.append("endmodule")
         lines.append("")
+        print('done generating dtmc')
         
         # Write Goal Label
         if (g := self.generate_goal_label()): lines.append(g)
