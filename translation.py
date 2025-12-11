@@ -448,6 +448,7 @@ class PPDDLToPRISM:
                 predicate_args_map = {}
                 for pred in predicate_strs:
                     if pred == '':
+                        print('pred is empty')
                         continue
                     while pred.startswith('('):
                         pred = pred[1:]
