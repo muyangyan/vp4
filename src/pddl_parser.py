@@ -470,7 +470,6 @@ class PPDDLToPRISM:
             # replace dashes with underscores in the guard string
             guard = guard.replace('-', '_')
 
-            print('object_lists:', object_lists)
             for args in itertools.product(*object_lists):
                 # Assume arg_map is now a character-to-character mapping, e.g. {'x':'a', 'y':'b'}
                 # Replace all occurrences of each variable character in the guard and then strings
@@ -488,12 +487,12 @@ class PPDDLToPRISM:
                 if grounded_action not in self.action_update_map.keys():
                     continue
 
-                print('GROUNDED_ACTION:', grounded_action)
-                print('GROUNDED_GUARD:', grounded_guard)
                 action_update = self.action_update_map[grounded_action] # CHECK THIS
                 action_update_str = " + ".join([f"{prob} : {update}" for prob, update in action_update])
 
-                rule_line = f"\t[{rule['name']}] {grounded_guard} -> {action_update_str};"
+
+                rule_name = rule['name'].replace('-', '_')
+                rule_line = f"\t[{rule_name}] {grounded_guard} -> {action_update_str};"
                 lines.append(rule_line)
 
         lines.append("endmodule")
