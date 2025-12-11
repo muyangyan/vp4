@@ -272,10 +272,32 @@ class PDDLToPRISM:
 
         # write rules from policy
         for rule in policy:
-            # ground 
-            lifted_action = rule['then']
-            for 
+            guard = self._translate_expression(rule['if'], {})
+            # get the set of all possible groundings of the rule, and write the transition for each
 
+            # enumerate all groundings of the rule's if condition
+
+                # find total number of objects involved
+
+
+                # get a list of tuples 
+
+
+
+
+
+            # for each grounding, write the transition, finding the grounded update by the grounded action
+
+
+
+            lifted_action = rule['then']
+
+            
+
+            for action in self.ground_actions:
+                if action['name'] == lifted_action:
+                    lines.append(f"\t[{rule['name']}] {rule['if']} -> {action['updates']};")
+                    break
 
             lines.append(f"\t[{rule['name']}] {rule['if']} -> {rule['updates']};")
 
