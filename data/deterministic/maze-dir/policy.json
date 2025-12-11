@@ -1,0 +1,67 @@
+[
+    {
+        "name": "Trivial down",
+        "if": "(and (dir=down) (at ?omf ?x ?y) (inc ?y ?yn) (not (wall ?x ?yn)) (or (not (dec ?x ?xp)) (and (dec ?x ?xp) (wall ?xp ?y))))",
+        "then": "move-down"
+    },
+    {
+        "name": "Down-left recovery",
+        "if": "(and (dir=down) (at ?omf ?x ?y) (dec ?x ?xp) (not (wall ?xp ?y)) (inc ?y ?yn) (wall ?xp ?yn))",
+        "then": "move-left"
+    },
+    {
+        "name": "Trivial left",
+        "if": "(and (dir=left) (at ?omf ?x ?y) (dec ?x ?xp) (not (wall ?xp ?y)) (or (not (dec ?y ?yp)) (and (dec ?y ?yp) (wall ?x ?yp))))",
+        "then": "move-left"
+    },
+    {
+        "name": "Left-up recovery",
+        "if": "(and (dir=left) (at ?omf ?x ?y) (dec ?y ?yp) (not (wall ?x ?yp)) (inc ?x ?xn) (wall ?xn ?yp))",
+        "then": "move-up"
+    },
+    {
+        "name": "Trivial up",
+        "if": "(and (dir=up) (at ?omf ?x ?y) (dec ?y ?yp) (not (wall ?x ?yp)) (or (not (inc ?x ?xn)) (and (inc ?x ?xn) (wall ?xn ?y))))",
+        "then": "move-up"
+    },
+    {
+        "name": "Up-right recovery",
+        "if": "(and (dir=up) (at ?omf ?x ?y) (inc ?x ?xn) (not (wall ?xn ?y)) (dec ?y ?yp) (wall ?xn ?yp))",
+        "then": "move-right"
+    },
+    {
+        "name": "Trivial right",
+        "if": "(and (dir=right) (at ?omf ?x ?y) (inc ?x ?xn) (not (wall ?xn ?y)) (or (not (inc ?y ?yn)) (and (inc ?y ?yn) (wall ?x ?yn))))",
+        "then": "move-right"
+    },
+    {
+        "name": "Right-down recovery",
+        "if": "(and (dir=right) (at ?omf ?x ?y) (inc ?y ?yn) (not (wall ?x ?yn)) (dec ?x ?xp) (wall ?xp ?yn))",
+        "then": "move-down"
+    },
+    {
+        "name": "Stuck-rotate from down",
+        "if": "(and (dir=down) (at ?omf ?x ?y) (or (not (inc ?y ?yn)) (and (inc ?y ?yn) (wall ?x ?yn))))",
+        "then": "face-right"
+    },
+    {
+        "name": "Stuck-rotate from right",
+        "if": "(and (dir=right) (at ?omf ?x ?y) (or (not (inc ?x ?xn)) (and (inc ?x ?xn) (wall ?xn ?y))))",
+        "then": "face-up"
+    },
+    {
+        "name": "Stuck-rotate from up",
+        "if": "(and (dir=up) (at ?omf ?x ?y) (or (not (dec ?y ?yp)) (and (dec ?y ?yp) (wall ?x ?yp))))",
+        "then": "face-left"
+    },
+    {
+        "name": "Stuck-rotate from left",
+        "if": "(and (dir=left) (at ?omf ?x ?y) (or (not (dec ?x ?xp)) (and (dec ?x ?xp) (wall ?xp ?y))))",
+        "then": "face-down"
+    },
+    {
+        "name": "Default",
+        "if": "",
+        "then": "move-down"
+    }
+]

@@ -7,8 +7,8 @@
 ;; 2 . . .
 ;; 3 . . G
 
-(define (problem maze-3x3-open)
-  (:domain maze)
+(define (problem maze-dir-3x3-open)
+  (:domain maze-dir)
   (:objects 
     agent1 - agent
     p1 p2 p3 - position
@@ -20,6 +20,7 @@
     
     ;; Initial State
     (at agent1 p1 p1)
+    (dir=down)
   )
   (:goal (at agent1 p3 p3))
 )

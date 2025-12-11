@@ -1,0 +1,22 @@
+[
+    {
+        "name": "Down-if-able",
+        "if": "(and (at ?omf ?x ?y) (inc ?y ?yn) (not (wall ?x ?yn)))",
+        "then": "(move-down)"
+    },
+    {
+        "name": "Right-if-able",
+        "if": "(and (at ?omf ?x ?y) (inc ?x ?xn) (not (wall ?xn ?y)))",
+        "then": "(move-right)"
+    },
+    {
+        "name": "Up-if-able",
+        "if": "(and (at ?omf ?x ?y) (dec ?y ?yn) (not (wall ?x ?yn)))",
+        "then": "(move-up)"
+    },
+    {
+        "name": "Left-if-able",
+        "if": "(and (at ?omf ?x ?y) (dec ?x ?xn) (not (wall ?xn ?y)))",
+        "then": "(move-left)"
+    }
+]

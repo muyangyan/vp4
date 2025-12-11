@@ -1,0 +1,208 @@
+[
+    {
+        "name": "Trivial down",
+        "comment": "If facing down with a wall or edge to the right-hand side (left), step down",
+        "if":
+            "(and
+                (dir=down)
+                (at ?omf ?x ?y)
+                (inc ?y ?yn)
+                (not (wall ?x ?yn))
+                (or
+                    (not (dec ?x ?xp))
+                    (and
+                        (dec ?x ?xp)
+                        (wall ?xp ?y)
+                    )
+                )
+            )",
+        "then": "move-down"
+    },
+    {
+        "name": "Down-left recovery",
+        "comment": "If stepped down with RH on wall and wall is now gone, must go left to adjust"
+        "if":
+            "(and
+                (dir=down)
+                (at ?omf ?x ?y)
+                (dec ?x ?xp)
+                (not (wall ?xp ?y))
+                (inc ?y ?yn)
+                (wall ?xp ?yn)
+            )",
+        "then": "move-left"
+    },
+    {
+        "name": "Trivial left",
+        "comment": "If facing left with a wall or edge to the right-hand side (above), step left",
+        "if":
+            "(and
+                (dir=left)
+                (at ?omf ?x ?y)
+                (dec ?x ?xp)
+                (not (wall ?xp ?y))
+                (or
+                    (not (dec ?y ?yp))
+                    (and
+                        (dec ?y ?yp)
+                        (wall ?x ?yp)
+                    )
+                )
+            )",
+        "then": "move-left"
+    },
+    {
+        "name": "Left-up recovery",
+        "comment": "If stepped left with RH on wall and wall is now gone, must go up to adjust",
+        "if":
+            "(and
+                (dir=left)
+                (at ?omf ?x ?y) 
+                (dec ?y ?yp)
+                (not (wall ?x ?yp))
+                (inc ?x ?xn)
+                (wall ?xn ?yp)
+            )",
+        "then": "move-up"
+    },
+    {
+        "name": "Trivial up",
+        "comment": "If facing up with a wall or edge to the right-hand size (right), step up",
+        "if":
+            "(and
+                (dir=up)
+                (at ?omf ?x ?y)
+                (dec ?y ?yp)
+                (not (wall ?x ?yp))
+                (or
+                    (not (inc ?x ?xn))
+                    (and
+                        (inc ?x ?xn)
+                        (wall ?xn ?y)
+                    )
+                )
+            )",
+        "then": "move-up"
+    },
+    {
+        "name": "Up-right recovery",
+        "comment": "If stepped up with RH on wall and wall is now gone, must do right to adjust",
+        "if":
+            "(and
+                (dir=up)
+                (at ?omf ?x ?y)
+                (inc ?x ?xn)
+                (not (wall ?xn ?y))
+                (dec ?y ?yp)
+                (wall ?xn ?yp)
+            )",
+        "then": "move-right"
+    },
+    {
+        "name": "Trivial right",
+        "comment": "If facing right with a wall or edge to the right-hand side (below), step right",
+        "if":
+            "(and
+                (dir=right)
+                (at ?omf ?x ?y)
+                (inc ?x ?xn)
+                (not (wall ?xn ?y))
+                (or
+                    (not (inc ?y ?yn))
+                    (and
+                        (inc ?y ?yn)
+                        (wall ?x ?yn)
+                    )
+                )
+            )",
+        "then": "move-right"
+    },
+    {
+        "name": "Right-down recovery",
+        "comment": "If stepped right with RH on wall and wall is now gone, must go down to adjust",
+        "if":
+            "(and
+                (dir=right)
+                (at ?omf ?x ?y)
+                (inc ?y ?yn)
+                (not (wall ?x ?yn))
+                (dec ?x ?xp)
+                (wall ?xp ?yn)
+            )",
+        "then": "move-down"
+    },
+    {
+        "name": "Stuck-rotate from down",
+        "comment": "If cannot step down, face right",
+        "if":
+            "(and
+                (dir=down)
+                (at ?omf ?x ?y)
+                (or
+                    (not (inc ?y ?yn))
+                    (and
+                        (inc ?y ?yn)
+                        (wall ?x ?yn)
+                    )
+                )
+            )",
+        "then": "face-right"
+    },
+    {
+        "name": "Stuck-rotate from right",
+        "comment": "If cannot step right, face up",
+        "if":
+            "(and
+                (dir=right)
+                (at ?omf ?x ?y)
+                (or
+                    (not (inc ?x ?xn))
+                    (and
+                        (inc ?x ?xn)
+                        (wall ?xn ?y)
+                    )
+                )
+            )",
+        "then": "face-up"
+    },
+    {
+        "name": "Stuck-rotate from up",
+        "comment": "If cannot step up, face left",
+        "if":
+            "(and
+                (dir=up)
+                (at ?omf ?x ?y)
+                (or
+                    (not (dec ?y ?yp))
+                    (and
+                        (dec ?y ?yp)
+                        (wall ?x ?yp)
+                    )
+                )
+            )",
+        "then": "face-left"
+    },
+    {
+        "name": "Stuck-rotate from left",
+        "comment": "If cannot step left, face down",
+        "if":
+            "(and
+                (dir=left)
+                (at ?omf ?x ?y)
+                (or
+                    (not (dec ?x ?xp))
+                    (and
+                        (dec ?x ?xp)
+                        (wall ?xp ?y)
+                    )
+                )
+            )",
+        "then": "face-down"
+    },
+    {
+        "name": "Default",
+        "comment": "If lost, walk down until we find a wall",
+        "if": "",
+        "then": "move-down"
+    }
+]

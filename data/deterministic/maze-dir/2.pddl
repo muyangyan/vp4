@@ -8,8 +8,8 @@
 ;; 3 . . .
 
 
-(define (problem maze-3x3-obstacle)
-  (:domain maze)
+(define (problem maze-dir-3x3-obstacle)
+  (:domain maze-dir)
   (:objects 
     agent1 - agent
     p1 p2 p3 - position
@@ -22,6 +22,7 @@
     (wall p2 p1)
     
     (at agent1 p1 p1)
+    (dir=down)
   )
   (:goal (at agent1 p3 p1))
 )
