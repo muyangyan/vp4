@@ -2,11 +2,11 @@
   {
     "name": "pick-up-1",
     "if": "ontable_1 & clear_1 & handempty",
-    "then": "pick-up-from-table_1"
+    "then": "pick-up_1"
   },
   {
-    "name": "stack-risky",
+    "name": "stack",
     "if": "holding_1 & clear_2",
-    "then": "put-on-block-detonation_1_2"
+    "then": "stack_1_2"
   }
 ]
