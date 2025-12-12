@@ -337,8 +337,6 @@ class PPDDLToPRISM:
             args = [arg.name for arg in atom.arguments]
             init_facts.add(self._predicate_to_prism(atom.name, args))
         
-        # NOTE: Removed 'done' variable to allow multiple steps/loops
-        
         for atom in self.ground_atoms:
             val = "true" if atom in init_facts else "false"
             lines.append(f"\t{atom} : bool init {val};")
@@ -385,14 +383,12 @@ class PPDDLToPRISM:
             action_vars = get_vars(action_str)
             all_vars = set(guard_vars + action_vars)
             
-            # Removed !done check to allow looping
             setup_guard = "& !not_setup" if "not_setup" in self.ground_atoms else ""
 
             if not all_vars:
                 clean_action = action_str.replace('-', '_')
                 if clean_action in self.action_update_map:
                     updates = self.action_update_map[clean_action]
-                    # Removed done'=true update
                     update_str = " + ".join([f"{p} : {u}" for p, u in updates])
                     clean_guard = guard_str.replace('-', '_') 
                     
@@ -462,7 +458,6 @@ class PPDDLToPRISM:
                     continue
 
                 action_update = self.action_update_map[grounded_action]
-                # Removed done'=true update
                 update_str = " + ".join([f"{p} : {u}" for p, u in action_update])
                 
                 full_guard = f"{grounded_guard} {setup_guard}"
