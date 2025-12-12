@@ -6,9 +6,12 @@
   (:objects a b c - block)
   (:init 
     (ontable a) (on b a) (on c b)
-    (no-destroyed-table)
-    (clear d)
+    (clear c)
     (handempty)
+
+    (no-destroyed a) (no-destroyed b) (no-destroyed c)
+    (no-detonated a) (no-detonated b) (no-detonated c)
+    (no-destroyed-table)
   )
   (:goal (and (ontable a) (ontable b) (ontable c)
               (clear a) (clear b) (clear c) (no-destroyed-table)))
