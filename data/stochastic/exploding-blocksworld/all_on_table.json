@@ -2,11 +2,11 @@
   {
     "name": "put-down",
     "if": "holding_1",
-    "then": "put-down_1"
+    "then": "put-down-detontation_1"
   },
   {
     "name": "unstack",
-    "if": "on_1_2 & clear_1 & emptyhand",
-    "then": "unstack_1_2"
+    "if": "on_1_2 & clear_1 & handempty",
+    "then": "pick-up_1_2"
   }
 ]

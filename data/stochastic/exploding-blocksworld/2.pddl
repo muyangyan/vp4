@@ -6,13 +6,13 @@
   (:domain exploding-blocksworld)
   (:objects a b - block)
   (:init 
-    (on a b) (on-table b)
+    (on a b) (ontable b)
     (clear a)
-    (emptyhand)
+    (handempty)
     
     (no-destroyed a) (no-destroyed b)
     (no-detonated a) (no-detonated b)
     (no-destroyed-table)
   )
-  (:goal (and (on-table a) (on-table b)))
+  (:goal (and (ontable a) (ontable b)))
 )
