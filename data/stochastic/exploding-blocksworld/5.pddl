@@ -6,6 +6,7 @@
   (:objects a b c - block)
   (:init 
     (ontable a) (on b a) (on c b)
+    (no-destroyed-table)
     (clear d)
     (handempty)
   )
