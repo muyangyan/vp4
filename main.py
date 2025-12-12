@@ -27,10 +27,12 @@ def main(
         results[policy_file] = {}
         for problem_file in problem_files:
             results[policy_file][problem_file] = {}
+            compile = True
             for property_file in property_files:
                 print(f'RUNNING FOR: {problem_file} {policy_file} {property_file}')
-                res = run_single(domain_dir, problem_file, policy_file, property_file)
+                res = run_single(domain_dir, problem_file, policy_file, property_file, compile_dtmc=compile)
                 results[policy_file][problem_file][property_file] = res if res is not None else "Error"
+                compile = False
     
     # --- Formatting Logic ---
     print(f"\nResults for domain `{domain_dir}`")

@@ -32,18 +32,15 @@ def verify_property(dtmc_file: str, property_file: str) -> Optional[str]:
     return output_amount
 
 
-def run_single(
+def compile_single(
     domain_dir: str = "data/deterministic/blocksworld/",
     problem_file: str = "1.pddl",
     policy_file: str = "all_on_table.json", 
-    property_file: str = "property.pctl",
-    run_prism: str = "True",
 ):
     # 1. PDDL -> MDP
     domain_file_path = os.path.join(domain_dir, "domain.pddl")
     problem_file_path = os.path.join(domain_dir, problem_file)
     policy_file_path = os.path.join(domain_dir, policy_file)
-    property_file_path = os.path.join(domain_dir, property_file)
     
     mdp_text, translator = pddl_to_mdp(domain_file_path, problem_file_path)
     os.makedirs("tmp/", exist_ok=True)
@@ -58,6 +55,20 @@ def run_single(
 
     with open("tmp/dtmc.prism", "w") as f:
         f.write(dtmc_text)
+
+def run_single(
+    domain_dir: str = "data/deterministic/blocksworld/",
+    problem_file: str = "1.pddl",
+    policy_file: str = "all_on_table.json", 
+    property_file: str = "property.pctl",
+    run_prism: str = "True",
+    compile_dtmc: bool = True,
+):
+    # Prepare the DTMC, as needed
+    if compile_dtmc:
+        compile_single(domain_dir, problem_file, policy_file)
+    
+    property_file_path = os.path.join(domain_dir, property_file)
 
     # 3. Verify
     if run_prism != "True":
