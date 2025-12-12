@@ -6,9 +6,9 @@
   (:domain exploding-blocksworld)
   (:objects a b - block)
   (:init 
-    (on-table a) (on-table b)
+    (ontable a) (ontable b)
     (clear a) (clear b)
-    (emptyhand)
+    (handempty)
     
     ;; Safety initialization
     (no-destroyed a) (no-destroyed b)
