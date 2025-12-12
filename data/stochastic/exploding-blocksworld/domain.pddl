@@ -7,7 +7,15 @@
 (define (domain exploding-blocksworld)
   (:requirements :typing :conditional-effects :probabilistic-effects :equality :negative-preconditions)
   (:types block)
-  (:predicates (on ?b1 ?b2 - block) (ontable ?b - block) (clear ?b - block) (holding ?b - block) (handempty) (no-detonated ?b - block) (no-destroyed ?b - block) (no-destroyed-table))
+  (:predicates (on ?b1 ?b2 - block)
+           (ontable ?b - block)
+           (clear ?b - block)
+           (holding ?b - block)
+           (handempty)
+           (no-detonated ?b - block)
+           (no-destroyed ?b - block)
+           (no-destroyed-table)
+           )
   (:functions (total-cost))
 
   (:action pick-up

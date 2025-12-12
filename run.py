@@ -68,7 +68,7 @@ def run_single(
 
     print(f"Result for problem `{problem_file}`, policy `{policy_file}`, property `{property_file}`: ")
     print(result)
-    return
+    return result
 
 if __name__ == "__main__":
     Fire(run_single)
