@@ -9,8 +9,10 @@ Running DTMC version (using the "goal" as the property):
 prism bomb-in-toilet.dtmc -pctl $'P=? [F "goal"]'
 
 
+To run maze examples (only successfully tested on 3x3's!):
+- Generate the `dtmc.prism` for the maze: `python3 run.py data/deterministic/maze-dir/ 2.pddl right_hand_on_wall_split.json goal.pctl generate-dtmc-only`
+- Prune the unnecessary transitions: `./proof_of_concepts/clean.sh tmp/dtmc.prism`
+- Manually run PRISM (with additional memory, if needed): `prism tmp/dtmc.prism -pctl $'P=? [ F "goal" ]' -cuddmaxmem 16g`
+- Optionally time the output (and/or print verbose logs): `/usr/bin/time prism tmp/dtmc.prism -pctl $'P=? [ F "goal" ]' -v -cuddmaxmem 16g`
 
-if policy does not propose an applicable action, we are just stuck. no contingencies.
-
-Note:
-Current implementation of `verify_property` uses a call to `subprocess.run()`, which is inherently unsafe. Do not run this code on inputs you do not trust!
+If policy does not propose an applicable action, we are just stuck. No contingencies.
