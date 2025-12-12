@@ -8,6 +8,10 @@
     (ontable a) (on b a) (on c b) (on d c)
     (clear d)
     (handempty)
+
+    (no-destroyed a) (no-destroyed b) (no-destroyed c) (no-destroyed d)
+    (no-detonated a) (no-detonated b) (no-detonated c) (no-detonated d)
+    (no-destroyed-table)
   )
   (:goal (and (ontable a) (ontable b) (ontable c) (ontable d)
               (clear a) (clear b) (clear c) (clear d) (no-destroyed-table)))
