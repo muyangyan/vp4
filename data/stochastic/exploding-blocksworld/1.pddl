@@ -15,5 +15,5 @@
     (no-detonated a) (no-detonated b)
     (no-destroyed-table)
   )
-  (:goal (on a b))
+  (:goal (and (on a b) (no-destroyed-table)))
 )
