@@ -3,15 +3,11 @@ import tempfile
 import os
 import itertools
 from typing import List, Dict, Tuple, Any, Optional
-import re
 
 # --- PLADO IMPORT & MONKEY PATCH ---
-# We patch the Plado parser to bypass its sanity checks, which are buggy
-# and crash on valid PDDL actions that have no preconditions.
 import plado.parser
 
 def _dummy_make_checks(domain, problem, file=None):
-    # Returning False signals "No errors found", allowing parsing to proceed.
     return False
 
 if hasattr(plado.parser, 'sanity_checks'):
@@ -23,44 +19,27 @@ from plado.parser import parse
 
 class PPDDLToPRISM:
     def __init__(self, domain_file: str, problem_file: str):
-        # 1. Preprocess the input files to fix syntax issues (e.g. (:requirements) in problem file)
-        #    and handle probabilistic initialization (Probabilistic Setup pattern).
         print(f"--- PREPROCESSING: {problem_file} ---")
         self.clean_domain, self.clean_problem = self._preprocess(domain_file, problem_file)
 
-        # 2. Parse using Plado (with sanity checks disabled via monkey patch).
         try:
             self.domain_file = self.clean_domain
             self.problem_file = self.clean_problem
             self.domain, self.problem = parse(self.clean_domain, self.clean_problem)
         finally:
-            # We keep the temp files for reference; in production, you might delete them here.
             pass
 
-        # 3. Initialize data structures for the MDP translation.
         self.objects = self._collect_objects()
         self.ground_atoms = []
         self.ground_actions = []
-
-        # define helper maps
         self.name_to_pred_map = {n:p for n, p in zip([p.name for p in self.domain.predicates], self.domain.predicates)}
 
-    # --- INLINE PREPROCESSOR ---
     def _preprocess(self, d_path, p_path):
-        """
-        Reads raw PDDL files and fixes common issues that break strict parsers:
-        1. Removes (:requirements) from the problem file.
-        2. Converts (probabilistic ...) initial states into a deterministic setup action.
-        """
         with open(d_path, 'r') as f: d_text = f.read()
         with open(p_path, 'r') as f: p_text = f.read()
 
-        # Fix 1: Remove (:requirements) block from problem file.
         p_text = re.sub(r'\(:requirements[^)]+\)', '', p_text)
 
-        # Fix 2: Handle Probabilistic Init.
-        # Detects if (:init (probabilistic ...)) is used and transforms it into
-        # a 'prob_setup_init' action in the domain, starting the problem in a 'not-setup' state.
         init_data = self._extract_balanced_block(p_text, '(:init')
         if init_data and 'probabilistic' in init_data[2]:
             print("  [Preprocessor] Converting Probabilistic Init to 'Probabilistic Setup' action...")
@@ -68,18 +47,13 @@ class PPDDLToPRISM:
             prob_data = self._extract_balanced_block(init_block, 'probabilistic')
             
             if prob_data:
-                # Extract the probability specifications (e.g., "0.5 (A) 0.5 (B)")
                 inner_prob = prob_data[2].replace('(probabilistic', '', 1).strip()[:-1]
-                
-                # Replace problem init with a deterministic flag state.
                 new_init = "(:init (not-setup))"
                 p_text = p_text[:start] + new_init + p_text[end:]
                 
-                # Add the 'not-setup' predicate to the domain.
                 if '(:predicates' in d_text:
                     d_text = d_text.replace('(:predicates', '(:predicates (not-setup)')
                 
-                # Inject the 'prob_setup_init' action into the domain.
                 setup_action = f"\n(:action prob_setup_init :parameters () :precondition (not-setup) :effect (and (not (not-setup)) (probabilistic {inner_prob})))\n"
                 
                 d_text = d_text.strip()
@@ -89,7 +63,6 @@ class PPDDLToPRISM:
                 else:
                     d_text += setup_action
 
-        # Helper to write content to temporary files.
         def write_tmp(content, suffix):
             tf = tempfile.NamedTemporaryFile(mode='w', suffix=suffix, delete=False)
             tf.write(content)
@@ -99,7 +72,6 @@ class PPDDLToPRISM:
         return write_tmp(d_text, "domain_fixed.pddl"), write_tmp(p_text, "problem_fixed.pddl")
 
     def _extract_balanced_block(self, text, start_keyword):
-        """Helper to extract a full parenthesized block by counting balance."""
         start_idx = text.find(start_keyword)
         if start_idx == -1: return None
         open_paren = text.rfind('(', 0, start_idx + len(start_keyword))
@@ -111,7 +83,6 @@ class PPDDLToPRISM:
             if balance == 0: return (open_paren, i + 1, text[open_paren:i+1])
         return None
 
-    # --- DATA COLLECTION HELPERS ---
     def _collect_objects(self) -> Dict[str, List[str]]:
         objs = {}
         if hasattr(self.domain, 'constants') and self.domain.constants:
@@ -129,15 +100,12 @@ class PPDDLToPRISM:
         return self.objects.get(type_name, [])
 
     def _predicate_to_prism(self, predicate: str, args: List[str]) -> str:
-        """Converts PDDL predicate format (name, [arg1, arg2]) to PRISM variable name (name_arg1_arg2)."""
         clean_pred = predicate.replace('-', '_')
         if not args: return clean_pred
         clean_args = [a.replace('-', '_') for a in args]
         return f"{clean_pred}_{'_'.join(clean_args)}"
 
-    # --- DUCK TYPING & ATTRIBUTE SCANNING ---
     def _get_list_content(self, obj: Any) -> Optional[List[Any]]:
-        """Finds list-like content (e.g. for AND/OR blocks) by checking common attributes."""
         for attr in ['outcomes', 'effects', 'sub_formulas', 'parts', 'children', 'operands', 'effect_list']:
             if hasattr(obj, attr):
                 val = getattr(obj, attr)
@@ -145,18 +113,11 @@ class PPDDLToPRISM:
         return None
 
     def _get_child_content(self, obj: Any) -> Any:
-        """
-        Finds the single child object (e.g. for NOT wrappers).
-        Uses a deep scan to robustly find content even if attributes are non-standard.
-        """
-        # 1. Check known standard attributes first.
         candidates = ['atom', 'expression', 'operand', 'effect', 'argument', 'op', 'condition', 'formula', 'prop']
         for attr in candidates:
             if hasattr(obj, attr):
                 val = getattr(obj, attr)
                 if val is not None: return val
-        
-        # 2. Fallback: Deep scan of the object's directory.
         for attr in dir(obj):
             if attr.startswith('_'): continue
             val = getattr(obj, attr)
@@ -165,57 +126,63 @@ class PPDDLToPRISM:
         return None
 
     def _get_atom_details(self, obj: Any) -> Optional[Tuple[str, List[Any]]]:
-        """Extracts (name, arguments) from an atomic formula object."""
         if hasattr(obj, 'name') and hasattr(obj, 'arguments'): return obj.name, obj.arguments
         elif hasattr(obj, 'predicate'): return obj.predicate.name, getattr(obj, 'arguments', [])
         return None
 
-    # --- PROBABILITY EXTRACTION ---
     def _resolve_prob(self, prob_obj: Any) -> float:
-        """
-        Extracts a float probability from Plado objects.
-        Handles floats, strings, NumericConstant wrappers, and deeply nested attributes.
-        Ignores integers (like line numbers) to prevent logic errors.
-        """
-        # 1. Base case: float or int
         if isinstance(prob_obj, float): return prob_obj
         if isinstance(prob_obj, int): return float(prob_obj)
-        
-        # 2. Try direct string conversion
-        try: return float(str(prob_obj))
-        except: pass
+        if isinstance(prob_obj, str):
+            if '/' in prob_obj:
+                try:
+                    n, d = prob_obj.split('/')
+                    return float(n) / float(d)
+                except: pass
+            try: return float(prob_obj)
+            except: pass
 
-        # 3. Known Attribute Search
-        for attr in ['value', 'token', 'number', 'constant', 'val']:
+        op = getattr(prob_obj, 'op', None) or getattr(prob_obj, 'operator', None)
+        op_str = str(op) if op else ""
+        children = getattr(prob_obj, 'children', None) or getattr(prob_obj, 'operands', None)
+        if children and len(children) == 2 and ('/' in op_str or 'div' in op_str.lower()):
+            left = self._resolve_prob(children[0])
+            right = self._resolve_prob(children[1])
+            if right != 0: return left / right
+
+        search_space = ['token', 'value', 'number', 'constant', 'val', 'text', 'string']
+        if hasattr(prob_obj, '__dict__'):
+            search_space.extend(prob_obj.__dict__.keys())
+            
+        for attr in search_space:
+            if attr.startswith('_'): continue
             if hasattr(prob_obj, attr):
                 val = getattr(prob_obj, attr)
-                if val is not prob_obj:
-                    try: return self._resolve_prob(val)
-                    except: pass
+                if val is not prob_obj and val is not None:
+                    if isinstance(val, (float, int)): return float(val)
+                    if isinstance(val, str):
+                        try: return float(val)
+                        except: pass
+                    if hasattr(val, 'text'):
+                        try: return self._resolve_prob(val.text)
+                        except: pass
+                    if not isinstance(val, (list, tuple, dict)):
+                        try:
+                            ret = self._resolve_prob(val)
+                            if ret != 1.0: return ret
+                        except: pass
 
-        # 4. Deep Scan for float attributes (ignoring generic integers)
-        for attr in dir(prob_obj):
-            if attr.startswith('_'): continue
-            try:
-                val = getattr(prob_obj, attr)
-                if isinstance(val, float): return val
-                if isinstance(val, str):
-                    f = float(val)
-                    if 0.0 <= f <= 1.0: return f
-            except: continue
-
-        # 5. Last Resort: Regex on string representation (e.g. <NumericConstant 0.5>)
         s = str(prob_obj)
+        frac_match = re.search(r'(\d+)\s*/\s*(\d+)', s)
+        if frac_match:
+            return float(frac_match.group(1)) / float(frac_match.group(2))
         match = re.search(r'(\d+\.\d+(?:e-?\d+)?)', s)
         if match: return float(match.group(1))
-
-        # Default fallback
-        print(f"WARNING: Could not parse probability '{prob_obj}'. Defaulting to 1.0")
+        
+        print(f"WARNING: Parsing failed for '{prob_obj}' (Type: {type(prob_obj)}). Defaulting to 1.0")
         return 1.0
 
-    # --- TRANSLATION LOGIC ---
     def ground_state_variables(self):
-        """Generates all possible grounded atoms (boolean variables) from domain predicates and objects."""
         for predicate in self.domain.predicates:
             param_types = [ptype.type_name for ptype in predicate.parameters]
             object_lists = [self._get_objects_for_type(t) for t in param_types]
@@ -224,13 +191,10 @@ class PPDDLToPRISM:
                 self.ground_atoms.append(atom_name)
         self.ground_atoms = sorted(list(set(self.ground_atoms)))
 
-
     def _translate_expression(self, expr: Any, var_map: Dict[str, str]) -> str:
-        """Recursively translates a PDDL logical expression (precondition/goal) into a PRISM boolean string."""
         if not expr: return "true"
         typename = type(expr).__name__.lower()
         
-        # Handle Containers (AND / OR)
         children = self._get_list_content(expr)
         if children is not None:
             parts = [self._translate_expression(e, var_map) for e in children]
@@ -238,13 +202,11 @@ class PPDDLToPRISM:
                 return f"({' | '.join(parts)})" if parts else "false"
             return f"({' & '.join(parts)})" if parts else "true"
         
-        # Handle Negation (NOT)
         if 'not' in typename or 'neg' in typename:
             child = self._get_child_content(expr)
             if child: return f"!({self._translate_expression(child, var_map)})"
             return "true"
 
-        # Handle Atoms
         atom_data = self._get_atom_details(expr)
         if atom_data:
             pred_name, args = atom_data
@@ -253,24 +215,16 @@ class PPDDLToPRISM:
         return "true"
 
     def _effect_to_assignments(self, effect: Any, var_map: Dict[str, str]) -> List[Tuple[str, str]]:
-        """
-        Recursively extracts deterministic or conditional updates from an effect object.
-        Returns a list of tuples: (Variable, New_Value_Expression).
-        """
         if not effect: return []
         typename = type(effect).__name__.lower()
-        
-        # If we hit a probabilistic block, stop recursion (handled by _process_effects).
         if 'prob' in typename or hasattr(effect, 'outcomes'): return [] 
 
-        # 1. List of effects (AND)
         children = self._get_list_content(effect)
         if children is not None:
             assignments = []
             for e in children: assignments.extend(self._effect_to_assignments(e, var_map))
             return assignments
 
-        # 2. Negation (Delete List) -> var' = false
         if 'not' in typename or 'neg' in typename:
             child = self._get_child_content(effect)
             if child:
@@ -278,35 +232,26 @@ class PPDDLToPRISM:
                 return [(k, "false") for k, _ in pos]
             return []
 
-        # 3. Conditional Effect (WHEN condition effect) -> var' = (cond ? val : var)
         if 'when' in typename or 'cond' in typename:
             condition = getattr(effect, 'condition', None)
             inner_effect = getattr(effect, 'effect', None)
             if condition and inner_effect:
                 cond_str = self._translate_expression(condition, var_map)
                 inner_assigns = self._effect_to_assignments(inner_effect, var_map)
-                # Apply ternary logic for PRISM update
                 return [(var, f"({cond_str} ? {val} : {var})") for var, val in inner_assigns]
             return []
 
-        # 4. Atomic Effect (Add List) -> var' = true
         atom_data = self._get_atom_details(effect)
         if atom_data:
             pred_name, args = atom_data
             ground_args = [var_map.get(arg.name, arg.name) for arg in args]
             atom = self._predicate_to_prism(pred_name, ground_args)
             return [(atom, "true")]
-            
         return []
 
     def _process_effects(self, effects: Any, var_map: Dict[str, str]) -> Optional[List[Tuple[float, str]]]:
-        """
-        Processes action effects, handling both deterministic logic and probabilistic outcomes.
-        Returns a list of (probability, update_string) tuples.
-        """
         if not effects: return [(1.0, "true")]
         
-        # Separate the "Base" effects (deterministic/conditional) from the "Probabilistic" effect.
         all_children = []
         container = self._get_list_content(effects)
         if container is not None: all_children = container
@@ -323,12 +268,10 @@ class PPDDLToPRISM:
             if is_prob: prob_effect_obj = child 
             else: base_effects.append(child)
 
-        # Generate assignments for base effects
         base_assigns = []
         for b_eff in base_effects:
             base_assigns.extend(self._effect_to_assignments(b_eff, var_map))
 
-        # Generate probabilistic outcomes (merging base effects into each outcome)
         final_outcomes = []
         if prob_effect_obj:
             outcomes = getattr(prob_effect_obj, 'outcomes', getattr(prob_effect_obj, 'outcome', []))
@@ -345,14 +288,11 @@ class PPDDLToPRISM:
                     
                     final_outcomes.append((p_val, outcome_assigns + base_assigns))
             
-            # Implicit remainder (if probabilities sum to < 1.0)
             if total_prob < (1.0 - 1e-6):
                 final_outcomes.append((1.0 - total_prob, base_assigns))
         else:
-            # If no probabilistic effect, treat as single 1.0 outcome
             final_outcomes.append((1.0, base_assigns))
 
-        # Format as PRISM update strings
         results = []
         for prob, assigns in final_outcomes:
             state_map = {}
@@ -368,8 +308,6 @@ class PPDDLToPRISM:
         return results
 
     def ground_actions_logic(self):
-        """Generates all grounded actions with guards and updates."""
-        # Check if we are using the "Probabilistic Setup" pattern
         using_prob_setup = 'not_setup' in self.ground_atoms
 
         for action in self.domain.actions:
@@ -382,7 +320,6 @@ class PPDDLToPRISM:
                 action_name = self._predicate_to_prism(action.name, list(args))
                 guard = self._translate_expression(action.precondition, var_map)
                 
-                # Enforce ordering: All normal actions must wait for setup to complete.
                 if using_prob_setup and action.name != 'prob_setup_init':
                     guard = f"({guard}) & !not_setup"
 
@@ -394,125 +331,157 @@ class PPDDLToPRISM:
         self.action_update_map = {action['name']: action['updates'] for action in self.ground_actions}
 
     def _write_initial_state(self) -> List[str]:
-        """Writes the variables block for PRISM, setting initial values."""
         lines = []
         init_facts = set()
         for atom in self.problem.initial:
             args = [arg.name for arg in atom.arguments]
             init_facts.add(self._predicate_to_prism(atom.name, args))
+        
+        # NOTE: Removed 'done' variable to allow multiple steps/loops
+        
         for atom in self.ground_atoms:
             val = "true" if atom in init_facts else "false"
             lines.append(f"\t{atom} : bool init {val};")
         return lines
 
     def generate_goal_label(self) -> str:
-        """Generates the PRISM goal label from the problem definition."""
         if not self.problem.goal: return ""
         goal_expr = self._translate_expression(self.problem.goal, {})
         return f'label "goal" = {goal_expr};'
 
     def generate_mdp(self) -> str:
-        """Assembles the full PRISM MDP file."""
         lines = ["mdp", "", "module main"]
         lines.extend(self._write_initial_state())
         lines.append("")
-        
-        # Write actions
         for action in self.ground_actions:
             updates_strs = []
             for prob, update in action['updates']:
                 updates_strs.append(f"{prob} : {update}")
             full_update = " + ".join(updates_strs)
             lines.append(f"\t[{action['name']}] {action['guard']} -> {full_update};")
-
         lines.append("endmodule")
         return "\n".join(lines)
     
     def generate_dtmc(self, policy: dict) -> str:
         lines = ["dtmc", "", "module main"]
-
         lines.extend(self._write_initial_state())
 
-        # write rules from policy
+        if "not_setup" in self.ground_atoms and "prob_setup_init" in self.action_update_map:
+            setup_updates = self.action_update_map["prob_setup_init"]
+            setup_str = " + ".join([f"{prob} : {update}" for prob, update in setup_updates])
+            lines.append(f"\t[prob_setup_init] not_setup -> {setup_str};")
+            
+        used_guards = []
+        
         for rule in policy:
-            guard = rule['if']
+            guard_str = rule['if']
+            action_str = rule['then']
+            rule_name = rule['name'].replace('-', '_').replace(' ', '_')
 
-            def parse_guard_predicates(guard: str):
-                """
-                Given a guard string like 'on_1_2 & clear_1 | handempty_ & pick-up_1',
-                return a dict mapping predicate names to lists of their arguments as strings.
-                Now splits by both & and |.
-                """
-                predicate_strs = [pred.strip().rstrip('_') for pred in re.split(r'[&|]', guard)]
-                predicate_args_map = {}
-                for pred in predicate_strs:
-                    if pred == '':
-                        print('pred is empty')
-                        continue
-                    while pred.startswith('('):
-                        pred = pred[1:]
-                    while pred.endswith(')'):
-                        pred = pred[:-1]
-                    if pred.startswith('!'):
-                        pred = pred[1:]  # Remove the leading '!'
-                    match = re.match(r'([a-zA-Z\-]+)((?:_\d+)*)$', pred)
+            def get_vars(s: str) -> List[int]:
+                return [int(x) for x in re.findall(r'_(\d+)\b', s)]
+
+            guard_vars = get_vars(guard_str)
+            action_vars = get_vars(action_str)
+            all_vars = set(guard_vars + action_vars)
+            
+            # Removed !done check to allow looping
+            setup_guard = "& !not_setup" if "not_setup" in self.ground_atoms else ""
+
+            if not all_vars:
+                clean_action = action_str.replace('-', '_')
+                if clean_action in self.action_update_map:
+                    updates = self.action_update_map[clean_action]
+                    # Removed done'=true update
+                    update_str = " + ".join([f"{p} : {u}" for p, u in updates])
+                    clean_guard = guard_str.replace('-', '_') 
+                    
+                    full_guard = f"{clean_guard} {setup_guard}"
+                    lines.append(f"\t[{rule_name}] {full_guard} -> {update_str};")
+                    used_guards.append(f"({clean_guard})")
+                continue
+
+            max_arity = max(all_vars)
+            argument_types = ["object" for _ in range(max_arity)]
+
+            def parse_guard_predicates(g_str):
+                atoms = re.split(r'[&|!()]', g_str)
+                mapping = {}
+                for atom in atoms:
+                    atom = atom.strip()
+                    if not atom: continue
+                    match = re.match(r'^([a-zA-Z0-9\-]+)((?:_\d+)*)$', atom)
                     if match:
                         name = match.group(1)
-                        args_section = match.group(2)
-                        args = [arg for arg in args_section.split('_') if arg]
-                        predicate_args_map[name] = args
-                    else:
-                        predicate_args_map[pred] = []
-                return predicate_args_map
-            
-            pred_args_map = parse_guard_predicates(guard)
-            all_args = [int(arg) for args in pred_args_map.values() for arg in args if arg.isdigit()]
-            max_arity = max(all_args) if all_args else 0
+                        arg_chunk = match.group(2)
+                        args = [a for a in arg_chunk.split('_') if a]
+                        mapping[name] = args
+                return mapping
 
-            # search predicate by name to assign types to arguments
-            argument_types = ["object" for _ in range(max_arity)]
-            for pred_name, args in pred_args_map.items():
-                pred = self.name_to_pred_map[pred_name]
-                for i, arg in enumerate(args):
-                    if argument_types[int(arg) - 1] != "object":
-                        continue
-                    argument_types[int(arg) - 1] = pred.parameters[i].type_name
+            pred_args_map = parse_guard_predicates(guard_str)
+            for p_name, p_args in pred_args_map.items():
+                pred_def = self.name_to_pred_map.get(p_name) or self.name_to_pred_map.get(p_name.replace('-', '_'))
+                if pred_def:
+                    for i, arg_idx_str in enumerate(p_args):
+                        if arg_idx_str.isdigit():
+                            idx = int(arg_idx_str) - 1
+                            if 0 <= idx < max_arity:
+                                argument_types[idx] = pred_def.parameters[i].type_name
+
+            act_match = re.match(r'^([a-zA-Z0-9\-]+)((?:_\d+)*)$', action_str)
+            if act_match:
+                act_name = act_match.group(1)
+                act_args = [a for a in act_match.group(2).split('_') if a]
+                action_param_map = {a.name: [p.type_name for p in a.parameters] for a in self.domain.actions}
+                param_types = action_param_map.get(act_name)
+                if param_types and len(act_args) == len(param_types):
+                    for i, arg_idx_str in enumerate(act_args):
+                        if arg_idx_str.isdigit():
+                            idx = int(arg_idx_str) - 1
+                            if 0 <= idx < max_arity and argument_types[idx] == "object":
+                                argument_types[idx] = param_types[i]
+
             object_lists = [self._get_objects_for_type(t) for t in argument_types]
-
-            # replace dashes with underscores in the guard string
-            guard = guard.replace('-', '_')
-
+            
             for args in itertools.product(*object_lists):
-                # Assume arg_map is now a character-to-character mapping, e.g. {'x':'a', 'y':'b'}
-                # Replace all occurrences of each variable character in the guard and then strings
-                def apply_arg_map(s, arg_map):
-                    for var, val in arg_map.items():
-                        # Just replace any occurrence of _var with _val (no need to check for trailing underscore)
-                        s = s.replace(f"_{var}", f"_{val}")
-                    return s
+                arg_map = {str(i+1): obj for i, obj in enumerate(args)}
+                sorted_vars = sorted(arg_map.keys(), key=len, reverse=True)
 
-                arg_map = {i+1:arg for i, arg in enumerate(args)}
-                grounded_guard = apply_arg_map(guard, arg_map)
-                grounded_action = apply_arg_map(rule['then'], arg_map)
+                grounded_guard = guard_str
+                grounded_action = action_str
+
+                for v in sorted_vars:
+                    val = arg_map[v]
+                    grounded_guard = grounded_guard.replace(f"_{v}", f"_{val}")
+                    grounded_action = grounded_action.replace(f"_{v}", f"_{val}")
 
                 grounded_action = grounded_action.replace('-', '_')
-                if grounded_action not in self.action_update_map.keys():
+                grounded_guard = grounded_guard.replace('-', '_')
+
+                if grounded_action not in self.action_update_map:
                     continue
 
-                action_update = self.action_update_map[grounded_action] # CHECK THIS
-                action_update_str = " + ".join([f"{prob} : {update}" for prob, update in action_update])
+                action_update = self.action_update_map[grounded_action]
+                # Removed done'=true update
+                update_str = " + ".join([f"{p} : {u}" for p, u in action_update])
+                
+                full_guard = f"{grounded_guard} {setup_guard}"
+                lines.append(f"\t[{rule_name}] {full_guard} -> {update_str};")
+                used_guards.append(f"({grounded_guard})")
 
-
-                rule_name = rule['name'].replace('-', '_').replace(' ', '_')
-                rule_line = f"\t[{rule_name}] {grounded_guard} -> {action_update_str};"
-                lines.append(rule_line)
-
+        # 2. Add Catch-All (Stuck) Transition [Self-Loop]
+        # Fires if not setup and NO user rule matches.
+        if used_guards:
+            negated_policies = " & ".join([f"!{g}" for g in used_guards])
+            setup_guard = "& !not_setup" if "not_setup" in self.ground_atoms else ""
+            lines.append(f"\t[stuck] {negated_policies} {setup_guard} -> 1.0 : true;")
+        
         lines.append("endmodule")
         lines.append("")
-        print('Done generating dtmc')
         
-        # Write Goal Label
         if (g := self.generate_goal_label()): lines.append(g)
+        
+        print('Done generating dtmc')
         return "\n".join(lines)
 
 def pddl_to_mdp(domain_file: str, problem_file: str) -> Tuple[str, PPDDLToPRISM]:
@@ -520,10 +489,3 @@ def pddl_to_mdp(domain_file: str, problem_file: str) -> Tuple[str, PPDDLToPRISM]
     translator.ground_state_variables()
     translator.ground_actions_logic()
     return translator.generate_mdp(), translator
-
-if __name__ == "__main__":
-    mdp_str, _ = pddl_to_mdp("data/stochastic/bomb-in-toilet/domain.pddl", "data/stochastic/bomb-in-toilet/3.pddl")
-    print("----- Generated MDP -----")
-    print(mdp_str)
-    with open("tmp/generated_mdp.prism", "w") as f:
-        f.write(mdp_str)
