@@ -6,11 +6,6 @@ from typing import Optional
 import os
 
 def verify_property(dtmc_file: str, property_file: str) -> Optional[str]:
-    """
-    dtmc_file: Path to the DTMC model file in PRISM format.
-    property_file: path to file containing property in 
-    """
-    # call prism on dtmc file, with property speicified in the file
     with open(property_file, "r") as property_infile:
         property = property_infile.read().strip()
 
@@ -19,18 +14,20 @@ def verify_property(dtmc_file: str, property_file: str) -> Optional[str]:
         with open(results_file, "w") as f:
             f.write("")
 
-    # Prepare command for subprocess
-    command = ["prism", dtmc_file, "-pctl", f"P=? [{property}]", f"-exportresults", f"{results_file}"]
+    # Removed -fixdeadlocks to support older PRISM versions / standard usage
+    command = ["prism", dtmc_file, "-pctl", f"P=? [{property}]", "-exportresults", f"{results_file}"]
     output_data = subprocess.run(command, capture_output=True, text=True)
 
-    # Check return code
     if output_data.returncode != 0:
         print(f"PRISM returned {output_data.returncode} on inputs `{command}` with info:\n--- stdout ---\n{output_data.stdout}\n--- stderr ---\n{output_data.stderr}\nAborting verify_property.")
         return None
     
     with open(results_file, "r") as results_infile:
-        results_raw = results_infile.read().strip()
-        output_amount = results_raw.split()[1].strip()
+        try:
+            results_raw = results_infile.read().strip()
+            output_amount = results_raw.split()[1].strip()
+        except IndexError:
+            return "Error (No Result)"
 
     return output_amount
 
@@ -42,18 +39,19 @@ def run_single(
     property_file: str = "property.pctl",
     run_prism: str = "True",
 ):
-    # parse pddl domain, problem -> mdp file =========================
-    domain_file = os.path.join(domain_dir, "domain.pddl")
-    problem_file = os.path.join(domain_dir, problem_file)
-    policy_file = os.path.join(domain_dir, policy_file)
-    property_file = os.path.join(domain_dir, property_file)
-    mdp_text, translator = pddl_to_mdp(domain_file, problem_file)
+    # 1. PDDL -> MDP
+    domain_file_path = os.path.join(domain_dir, "domain.pddl")
+    problem_file_path = os.path.join(domain_dir, problem_file)
+    policy_file_path = os.path.join(domain_dir, policy_file)
+    property_file_path = os.path.join(domain_dir, property_file)
+    
+    mdp_text, translator = pddl_to_mdp(domain_file_path, problem_file_path)
     os.makedirs("tmp/", exist_ok=True)
     with open("tmp/mdp.prism", "w") as f:
         f.write(mdp_text)
 
-    # apply policy to get actions -> dtmc file =======================
-    with open(policy_file, "r") as f:
+    # 2. MDP + Policy -> DTMC (using translator)
+    with open(policy_file_path, "r") as f:
         policy = json.load(f)
 
     dtmc_text = translator.generate_dtmc(policy)
@@ -61,14 +59,13 @@ def run_single(
     with open("tmp/dtmc.prism", "w") as f:
         f.write(dtmc_text)
 
-    # call prism on dtmc file, with property, if provided ============
+    # 3. Verify
     if run_prism != "True":
         return
 
     print(f"Verifying property using generated dtmc...")
-    result = verify_property("tmp/dtmc.prism", property_file)
+    result = verify_property("tmp/dtmc.prism", property_file_path)
 
-    # print result
     print(f"Result for problem `{problem_file}`, policy `{policy_file}`, property `{property_file}`: ")
     print(result)
     return
