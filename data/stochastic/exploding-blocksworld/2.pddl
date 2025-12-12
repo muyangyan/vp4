@@ -14,5 +14,5 @@
     (no-detonated a) (no-detonated b)
     (no-destroyed-table)
   )
-  (:goal (and (ontable a) (ontable b)))
+  (:goal (and (ontable a) (ontable b) (no-destroyed-table)))
 )
