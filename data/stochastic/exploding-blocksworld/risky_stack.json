@@ -1,0 +1,12 @@
+[
+  {
+    "name": "pick-up-a",
+    "if": "ontable_a & clear_a & handempty",
+    "then": "pick-up-from-table_a"
+  },
+  {
+    "name": "stack-risky",
+    "if": "holding_a & clear_b",
+    "then": "put-on-block-detonation_a_b"
+  }
+]

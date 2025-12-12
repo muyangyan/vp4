@@ -2,7 +2,7 @@
   {
     "name": "put-down",
     "if": "holding_1",
-    "then": "put-down-detontation_1"
+    "then": "put-down-detonation_1"
   },
   {
     "name": "unstack",
